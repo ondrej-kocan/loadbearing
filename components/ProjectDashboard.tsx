@@ -18,7 +18,10 @@ interface Task {
   name: string;
   description: string | null;
   durationDays: number;
+  startDate: string | null;
+  endDate: string | null;
   createdAt: string;
+  dependencies?: any[];
 }
 
 interface ProjectDashboardProps {
