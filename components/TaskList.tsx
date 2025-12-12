@@ -1,21 +1,35 @@
 'use client';
 
 import { useState } from 'react';
+import DependencyManager from './DependencyManager';
+
+interface Dependency {
+  id: string;
+  dependsOnTaskId: string;
+  dependsOnTask: {
+    id: string;
+    name: string;
+  };
+}
 
 interface Task {
   id: string;
   name: string;
   description: string | null;
   durationDays: number;
+  startDate: string | null;
+  endDate: string | null;
   createdAt: string;
+  dependencies?: Dependency[];
 }
 
 interface TaskListProps {
   tasks: Task[];
   onTaskDeleted: () => void;
+  onDependencyUpdate: () => void;
 }
 
-export default function TaskList({ tasks, onTaskDeleted }: TaskListProps) {
+export default function TaskList({ tasks, onTaskDeleted, onDependencyUpdate }: TaskListProps) {
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const handleDelete = async (taskId: string) => {
@@ -41,6 +55,14 @@ export default function TaskList({ tasks, onTaskDeleted }: TaskListProps) {
     }
   };
 
+  const formatDate = (dateStr: string | null) => {
+    if (!dateStr) return null;
+    return new Date(dateStr).toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+    });
+  };
+
   if (tasks.length === 0) {
     return (
       <div className="bg-gray-50 border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
@@ -62,11 +84,25 @@ export default function TaskList({ tasks, onTaskDeleted }: TaskListProps) {
               {task.description && (
                 <p className="text-sm text-gray-600 mt-1">{task.description}</p>
               )}
-              <div className="flex items-center gap-4 mt-2">
+              <div className="flex items-center gap-4 mt-2 flex-wrap">
                 <span className="text-xs text-gray-500">
                   Duration: {task.durationDays} {task.durationDays === 1 ? 'day' : 'days'}
                 </span>
+                {task.startDate && task.endDate && (
+                  <span className="text-xs text-blue-600 font-medium">
+                    {formatDate(task.startDate)} → {formatDate(task.endDate)}
+                  </span>
+                )}
               </div>
+
+              {/* Dependency Manager */}
+              <DependencyManager
+                taskId={task.id}
+                taskName={task.name}
+                dependencies={task.dependencies || []}
+                availableTasks={tasks.map(t => ({ id: t.id, name: t.name }))}
+                onUpdate={onDependencyUpdate}
+              />
             </div>
             <button
               onClick={() => handleDelete(task.id)}

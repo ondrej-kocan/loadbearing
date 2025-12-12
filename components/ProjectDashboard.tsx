@@ -59,6 +59,24 @@ export default function ProjectDashboard({ project }: ProjectDashboardProps) {
     fetchTasks();
   };
 
+  // Calculate project end date (latest task end date)
+  const projectEndDate = tasks.length > 0
+    ? tasks.reduce((latest, task) => {
+        if (!task.endDate) return latest;
+        const taskEnd = new Date(task.endDate);
+        return !latest || taskEnd > latest ? taskEnd : latest;
+      }, null as Date | null)
+    : null;
+
+  const formatProjectEnd = (date: Date | null) => {
+    if (!date) return null;
+    return date.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+    });
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -94,8 +112,19 @@ export default function ProjectDashboard({ project }: ProjectDashboardProps) {
           {/* Timeline Card */}
           <div className="bg-white rounded-lg shadow p-6">
             <h2 className="text-lg font-semibold text-gray-900 mb-2">Timeline</h2>
-            <p className="text-3xl font-bold text-purple-600">—</p>
-            <p className="text-sm text-gray-500 mt-1">Add tasks to see timeline</p>
+            {projectEndDate ? (
+              <>
+                <p className="text-3xl font-bold text-purple-600">
+                  {formatProjectEnd(projectEndDate)}
+                </p>
+                <p className="text-sm text-gray-500 mt-1">Estimated completion</p>
+              </>
+            ) : (
+              <>
+                <p className="text-3xl font-bold text-purple-600">—</p>
+                <p className="text-sm text-gray-500 mt-1">Add tasks to see timeline</p>
+              </>
+            )}
           </div>
         </div>
 
@@ -128,7 +157,11 @@ export default function ProjectDashboard({ project }: ProjectDashboardProps) {
               <p className="text-gray-500">Loading tasks...</p>
             </div>
           ) : (
-            <TaskList tasks={tasks} onTaskDeleted={fetchTasks} />
+            <TaskList
+              tasks={tasks}
+              onTaskDeleted={fetchTasks}
+              onDependencyUpdate={fetchTasks}
+            />
           )}
         </div>
 
