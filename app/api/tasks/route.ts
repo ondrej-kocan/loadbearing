@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { scheduleForward } from '@/core/services/scheduling';
 
 // GET /api/tasks?projectId=xxx - Get all tasks for a project
 export async function GET(request: Request) {
@@ -14,12 +15,59 @@ export async function GET(request: Request) {
       );
     }
 
+    // Fetch project to get start date
+    const project = await prisma.project.findUnique({
+      where: { id: projectId },
+      select: { startDate: true },
+    });
+
+    if (!project) {
+      return NextResponse.json(
+        { error: 'Project not found' },
+        { status: 404 }
+      );
+    }
+
+    // Fetch tasks with dependencies
     const tasks = await prisma.task.findMany({
       where: { projectId },
       orderBy: { createdAt: 'asc' },
+      include: {
+        dependencies: {
+          include: {
+            dependsOnTask: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
+          },
+        },
+      },
     });
 
-    return NextResponse.json({ tasks });
+    // Fetch all dependencies for scheduling
+    const dependencies = await prisma.taskDependency.findMany({
+      where: {
+        task: { projectId },
+      },
+    });
+
+    // Apply scheduling algorithm
+    const schedulingResult = scheduleForward(tasks, dependencies, project.startDate);
+
+    // Return scheduled tasks with dependencies
+    return NextResponse.json({
+      tasks: schedulingResult.scheduledTasks.map(task => ({
+        ...task,
+        startDate: task.startDate?.toISOString() || null,
+        endDate: task.endDate?.toISOString() || null,
+        createdAt: task.createdAt.toISOString(),
+        updatedAt: task.updatedAt.toISOString(),
+      })),
+      hasCycle: schedulingResult.hasCycle,
+      cycleError: schedulingResult.cycleError,
+    });
   } catch (error) {
     console.error('Error fetching tasks:', error);
     return NextResponse.json(
