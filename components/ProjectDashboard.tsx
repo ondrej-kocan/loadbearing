@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react';
 import TaskForm from './TaskForm';
 import TaskList from './TaskList';
+import BudgetForm from './BudgetForm';
+import BudgetList from './BudgetList';
 
 interface Project {
   id: string;
@@ -24,13 +26,24 @@ interface Task {
   dependencies?: any[];
 }
 
+interface BudgetItem {
+  id: string;
+  area: string;
+  description: string;
+  plannedAmount: number;
+  actualAmount: number | null;
+  createdAt: string;
+}
+
 interface ProjectDashboardProps {
   project: Project;
 }
 
 export default function ProjectDashboard({ project }: ProjectDashboardProps) {
   const [tasks, setTasks] = useState<Task[]>([]);
+  const [budgetItems, setBudgetItems] = useState<BudgetItem[]>([]);
   const [showTaskForm, setShowTaskForm] = useState(false);
+  const [showBudgetForm, setShowBudgetForm] = useState(false);
   const [loading, setLoading] = useState(true);
 
   const startDate = new Date(project.startDate).toLocaleDateString('en-US', {
@@ -53,13 +66,31 @@ export default function ProjectDashboard({ project }: ProjectDashboardProps) {
     }
   };
 
+  const fetchBudgetItems = async () => {
+    try {
+      const response = await fetch(`/api/budget?projectId=${project.id}`);
+      const data = await response.json();
+      if (response.ok) {
+        setBudgetItems(data.budgetItems);
+      }
+    } catch (error) {
+      console.error('Error fetching budget items:', error);
+    }
+  };
+
   useEffect(() => {
     fetchTasks();
+    fetchBudgetItems();
   }, [project.id]);
 
   const handleTaskSuccess = () => {
     setShowTaskForm(false);
     fetchTasks();
+  };
+
+  const handleBudgetSuccess = () => {
+    setShowBudgetForm(false);
+    fetchBudgetItems();
   };
 
   // Calculate project end date (latest task end date)
@@ -78,6 +109,19 @@ export default function ProjectDashboard({ project }: ProjectDashboardProps) {
       day: 'numeric',
       year: 'numeric',
     });
+  };
+
+  // Calculate budget totals
+  const budgetPlanned = budgetItems.reduce((sum, item) => sum + item.plannedAmount, 0);
+  const budgetActual = budgetItems.reduce((sum, item) => sum + (item.actualAmount || 0), 0);
+
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(amount);
   };
 
   return (
@@ -108,8 +152,24 @@ export default function ProjectDashboard({ project }: ProjectDashboardProps) {
           {/* Budget Card */}
           <div className="bg-white rounded-lg shadow p-6">
             <h2 className="text-lg font-semibold text-gray-900 mb-2">Budget</h2>
-            <p className="text-3xl font-bold text-green-600">$0</p>
-            <p className="text-sm text-gray-500 mt-1">No budget items yet</p>
+            {budgetItems.length > 0 ? (
+              <>
+                <p className="text-3xl font-bold text-green-600">{formatCurrency(budgetPlanned)}</p>
+                <p className="text-sm text-gray-500 mt-1">
+                  {formatCurrency(budgetActual)} spent
+                  {budgetActual > 0 && budgetPlanned > 0 && (
+                    <span className="ml-2">
+                      ({Math.round((budgetActual / budgetPlanned) * 100)}%)
+                    </span>
+                  )}
+                </p>
+              </>
+            ) : (
+              <>
+                <p className="text-3xl font-bold text-green-600">$0</p>
+                <p className="text-sm text-gray-500 mt-1">No budget items yet</p>
+              </>
+            )}
           </div>
 
           {/* Timeline Card */}
@@ -168,8 +228,38 @@ export default function ProjectDashboard({ project }: ProjectDashboardProps) {
           )}
         </div>
 
-        {/* Quick Actions - Only show if no tasks */}
-        {tasks.length === 0 && !showTaskForm && (
+        {/* Budget Section */}
+        <div className="mb-8">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-2xl font-semibold text-gray-900">Budget</h2>
+            {!showBudgetForm && (
+              <button
+                onClick={() => setShowBudgetForm(true)}
+                className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+              >
+                + Add Budget Item
+              </button>
+            )}
+          </div>
+
+          {showBudgetForm && (
+            <div className="mb-6">
+              <BudgetForm
+                projectId={project.id}
+                onSuccess={handleBudgetSuccess}
+                onCancel={() => setShowBudgetForm(false)}
+              />
+            </div>
+          )}
+
+          <BudgetList
+            budgetItems={budgetItems}
+            onBudgetDeleted={fetchBudgetItems}
+          />
+        </div>
+
+        {/* Quick Actions - Only show if no content */}
+        {tasks.length === 0 && budgetItems.length === 0 && !showTaskForm && !showBudgetForm && (
           <div className="bg-white rounded-lg shadow p-6">
             <h2 className="text-xl font-semibold text-gray-900 mb-4">Get Started</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -188,7 +278,10 @@ export default function ProjectDashboard({ project }: ProjectDashboardProps) {
                 </div>
               </button>
 
-              <button className="p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-green-500 hover:bg-green-50 transition-colors text-left">
+              <button
+                onClick={() => setShowBudgetForm(true)}
+                className="p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-green-500 hover:bg-green-50 transition-colors text-left"
+              >
                 <div className="flex items-center">
                   <div className="flex-shrink-0 w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
                     <span className="text-green-600 text-xl">$</span>
