@@ -15,6 +15,14 @@ export default async function Home() {
     return <CreateProject />;
   }
 
+  // Serialize dates for client component
+  const serializedProject = {
+    ...project,
+    startDate: project.startDate.toISOString(),
+    createdAt: project.createdAt.toISOString(),
+    updatedAt: project.updatedAt.toISOString(),
+  };
+
   // Otherwise, show the project dashboard
-  return <ProjectDashboard project={project} />;
+  return <ProjectDashboard project={serializedProject} />;
 }
