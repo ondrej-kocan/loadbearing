@@ -62,7 +62,7 @@ export default function BudgetForm({ projectId, onSuccess, onCancel }: BudgetFor
             value={area}
             onChange={(e) => setArea(e.target.value)}
             placeholder="e.g., Kitchen, Bathroom"
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
             required
             disabled={loading}
           />
@@ -78,7 +78,7 @@ export default function BudgetForm({ projectId, onSuccess, onCancel }: BudgetFor
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             placeholder="e.g., New cabinets, tiles"
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
             required
             disabled={loading}
           />
@@ -97,7 +97,7 @@ export default function BudgetForm({ projectId, onSuccess, onCancel }: BudgetFor
               placeholder="0.00"
               step="0.01"
               min="0"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
               required
               disabled={loading}
             />
@@ -115,7 +115,7 @@ export default function BudgetForm({ projectId, onSuccess, onCancel }: BudgetFor
               placeholder="0.00"
               step="0.01"
               min="0"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
               disabled={loading}
             />
             <p className="text-xs text-gray-500 mt-1">Optional</p>
