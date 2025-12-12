@@ -1,0 +1,84 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Project {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  startDate   DateTime @default(now())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  tasks       Task[]
+  budgetItems BudgetItem[]
+  shareTokens ShareToken[]
+
+  @@map("projects")
+}
+
+model Task {
+  id           String    @id @default(cuid())
+  projectId    String
+  name         String
+  description  String?
+  durationDays Int       @default(1)
+  startDate    DateTime?
+  endDate      DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  project           Project          @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  dependencies      TaskDependency[] @relation("TaskDependencies")
+  dependentTasks    TaskDependency[] @relation("DependentTasks")
+
+  @@map("tasks")
+}
+
+model TaskDependency {
+  id              String   @id @default(cuid())
+  taskId          String
+  dependsOnTaskId String
+  createdAt       DateTime @default(now())
+
+  task          Task @relation("TaskDependencies", fields: [taskId], references: [id], onDelete: Cascade)
+  dependsOnTask Task @relation("DependentTasks", fields: [dependsOnTaskId], references: [id], onDelete: Cascade)
+
+  @@unique([taskId, dependsOnTaskId])
+  @@map("task_dependencies")
+}
+
+model BudgetItem {
+  id            String   @id @default(cuid())
+  projectId     String
+  area          String
+  description   String
+  plannedAmount Decimal  @db.Decimal(10, 2)
+  actualAmount  Decimal? @db.Decimal(10, 2)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@map("budget_items")
+}
+
+model ShareToken {
+  id        String   @id @default(cuid())
+  projectId String
+  token     String   @unique
+  createdAt DateTime @default(now())
+  expiresAt DateTime?
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@map("share_tokens")
+}
