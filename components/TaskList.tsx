@@ -63,6 +63,13 @@ export default function TaskList({ tasks, onTaskDeleted, onDependencyUpdate }: T
     });
   };
 
+  // Calculate which tasks are blocked by this task (reverse dependencies)
+  const getBlockingTasks = (taskId: string): Task[] => {
+    return tasks.filter(task =>
+      task.dependencies?.some(dep => dep.dependsOnTaskId === taskId)
+    );
+  };
+
   if (tasks.length === 0) {
     return (
       <div className="bg-gray-50 border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
@@ -103,6 +110,15 @@ export default function TaskList({ tasks, onTaskDeleted, onDependencyUpdate }: T
                 availableTasks={tasks.map(t => ({ id: t.id, name: t.name }))}
                 onUpdate={onDependencyUpdate}
               />
+
+              {/* Blocking Tasks */}
+              {getBlockingTasks(task.id).length > 0 && (
+                <div className="mt-2 pt-2 border-t border-gray-100">
+                  <p className="text-xs text-gray-600 mb-1">
+                    Blocking: {getBlockingTasks(task.id).map(t => t.name).join(', ')}
+                  </p>
+                </div>
+              )}
             </div>
             <button
               onClick={() => handleDelete(task.id)}
