@@ -11,6 +11,10 @@ export interface Task {
   status: TaskStatus;
   startDate: Date | null;
   endDate: Date | null;
+  originalStartDate: Date | null;
+  originalEndDate: Date | null;
+  shiftDays: number;
+  shiftCause: string | null;
   createdAt: Date;
   updatedAt: Date;
 }

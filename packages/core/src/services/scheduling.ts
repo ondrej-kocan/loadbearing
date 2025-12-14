@@ -4,10 +4,19 @@
 
 import { Task, TaskDependency } from '../models/task';
 
+export interface TaskShift {
+  taskId: string;
+  taskName: string;
+  shiftDays: number;
+  causeTaskId: string;
+  causeTaskName: string;
+}
+
 export interface SchedulingResult {
   scheduledTasks: Task[];
   hasCycle: boolean;
   cycleError?: string;
+  shifts?: TaskShift[]; // Tasks that shifted and why
 }
 
 /**
@@ -137,8 +146,9 @@ export function scheduleForward(
   // Get tasks in topological order
   const sortedTaskIds = topologicalSort(tasks, dependencies);
 
-  // Map to store calculated dates
-  const calculatedDates = new Map<string, { startDate: Date; endDate: Date }>();
+  // Map to store calculated dates and shift info
+  const calculatedDates = new Map<string, { startDate: Date; endDate: Date; causeTaskId?: string }>();
+  const shifts: TaskShift[] = [];
 
   // Calculate dates in topological order
   for (const taskId of sortedTaskIds) {
@@ -147,12 +157,14 @@ export function scheduleForward(
 
     const deps = depMap.get(task.id) || [];
     let earliestStart = projectStartDate;
+    let causedBy: string | undefined;
 
     // Find latest end date of all dependencies
     for (const depId of deps) {
       const depDates = calculatedDates.get(depId);
       if (depDates && depDates.endDate > earliestStart) {
         earliestStart = depDates.endDate;
+        causedBy = depId;
       }
     }
 
@@ -160,21 +172,58 @@ export function scheduleForward(
     const endDate = new Date(startDate);
     endDate.setDate(endDate.getDate() + task.durationDays);
 
-    calculatedDates.set(task.id, { startDate, endDate });
+    calculatedDates.set(task.id, { startDate, endDate, causeTaskId: causedBy });
+
+    // Detect if this task shifted from its original schedule
+    if (task.originalStartDate) {
+      const originalStart = new Date(task.originalStartDate);
+      const daysDiff = Math.round((startDate.getTime() - originalStart.getTime()) / (1000 * 60 * 60 * 24));
+
+      if (daysDiff !== 0 && causedBy) {
+        const causeTask = tasks.find(t => t.id === causedBy);
+        if (causeTask) {
+          shifts.push({
+            taskId: task.id,
+            taskName: task.name,
+            shiftDays: daysDiff,
+            causeTaskId: causedBy,
+            causeTaskName: causeTask.name,
+          });
+        }
+      }
+    }
   }
 
-  // Map tasks with calculated dates
+  // Map tasks with calculated dates and shift info
   const scheduledTasks = tasks.map(task => {
     const dates = calculatedDates.get(task.id);
+    const originalStart = task.originalStartDate ? new Date(task.originalStartDate) : null;
+    const newStart = dates?.startDate || projectStartDate;
+
+    // Calculate shift days
+    let shiftDays = 0;
+    let shiftCause: string | null = null;
+
+    if (originalStart) {
+      shiftDays = Math.round((newStart.getTime() - originalStart.getTime()) / (1000 * 60 * 60 * 24));
+      shiftCause = dates?.causeTaskId || null;
+    }
+
     return {
       ...task,
-      startDate: dates?.startDate || projectStartDate,
-      endDate: dates?.endDate || new Date(new Date(projectStartDate).getTime() + task.durationDays * 24 * 60 * 60 * 1000),
+      startDate: newStart,
+      endDate: dates?.endDate || new Date(new Date(newStart).getTime() + task.durationDays * 24 * 60 * 60 * 1000),
+      // Set original dates on first schedule if not set
+      originalStartDate: task.originalStartDate || newStart,
+      originalEndDate: task.originalEndDate || dates?.endDate || new Date(new Date(newStart).getTime() + task.durationDays * 24 * 60 * 60 * 1000),
+      shiftDays,
+      shiftCause,
     };
   });
 
   return {
     scheduledTasks,
     hasCycle: false,
+    shifts: shifts.length > 0 ? shifts : undefined,
   };
 }
