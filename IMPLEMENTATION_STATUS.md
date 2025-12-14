@@ -76,7 +76,30 @@ Track progress on Loadbearing features to ensure nothing is lost.
 
 ## 🚧 In Progress
 
-_No features currently in progress_
+### Priority 3: Task ↔ Budget Linkage
+- **Status**: 🚧 In Progress
+- **Branch**: `claude/task-budget-linkage-90c2o`
+- **Goal**: Connect actions to budget tracking
+- **Implemented Features**:
+  - ✅ **Database linkage**: Added optional `taskId` field to BudgetItem model
+  - ✅ **Budget form task selection**: Both create and edit forms allow linking to tasks
+  - ✅ **Visual task linkage**: Budget list shows "🔗 Linked to: [Task Name]" for linked items
+  - ✅ **API support**: Budget POST and PUT endpoints handle taskId field
+  - ⏳ **Completion prompt**: Pending - prompt to mark costs as spent when completing tasks
+
+- **Technical Implementation**:
+  - [x] Schema: Added `taskId` field to BudgetItem, relation to Task ✅
+  - [x] BudgetForm: Fetch tasks, dropdown selector, send taskId to API ✅
+  - [x] BudgetEditForm: Fetch tasks, dropdown selector, send taskId to API ✅
+  - [x] Budget API: Handle taskId in POST and PUT endpoints ✅
+  - [x] Budget GET API: Include task relation in response ✅
+  - [x] BudgetList UI: Display linked task name ✅
+  - [ ] Task completion prompt: Show linked budget items when marking complete ⏳
+
+- **Notes**:
+  - Task linkage is optional - budget items can exist without a linked task
+  - OnDelete: SetNull ensures budget items remain if linked task is deleted
+  - All forms follow calm, plain-language UX philosophy
 
 ---
 
@@ -90,13 +113,6 @@ _No features currently in progress_
   - ✅ Display timeline shifts with visual indicators
   - ✅ "Timeline Changes" section showing shifted tasks
 - **Note**: This was implemented as part of the Priority 1 dashboard enhancements
-
-### Priority 3: Task ↔ Budget Linkage
-- **Goal**: Connect actions to budget tracking
-- **Features**:
-  - Allow budget items to be optionally linked to tasks
-  - When task is completed: prompt "Mark associated costs as spent?"
-  - Reduce budget admin friction
 
 ### Priority 4: Status-Driven Prompts
 - **Goal**: Calm, inline nudges (not notifications)
