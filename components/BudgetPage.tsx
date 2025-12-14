@@ -83,22 +83,26 @@ export default function BudgetPage({ project }: BudgetPageProps) {
         )}
       </div>
 
-      {/* Budget Summary */}
+      {/* Budget Summary - Compact */}
       {budgetItems.length > 0 && (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-          <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-sm font-medium text-gray-500 mb-1">Total Planned</h2>
-            <p className="text-3xl font-bold text-blue-600">{formatCurrency(budgetPlanned)}</p>
-          </div>
-          <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-sm font-medium text-gray-500 mb-1">Total Spent</h2>
-            <p className="text-3xl font-bold text-green-600">{formatCurrency(budgetActual)}</p>
-          </div>
-          <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-sm font-medium text-gray-500 mb-1">Remaining</h2>
-            <p className={`text-3xl font-bold ${budgetPlanned - budgetActual >= 0 ? 'text-gray-900' : 'text-red-600'}`}>
-              {formatCurrency(budgetPlanned - budgetActual)}
-            </p>
+        <div className="bg-white rounded-lg shadow p-4 mb-6">
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex-1 text-center">
+              <p className="text-xs font-medium text-gray-500 mb-1">Planned</p>
+              <p className="text-xl font-bold text-blue-600">{formatCurrency(budgetPlanned)}</p>
+            </div>
+            <div className="h-8 w-px bg-gray-200"></div>
+            <div className="flex-1 text-center">
+              <p className="text-xs font-medium text-gray-500 mb-1">Spent</p>
+              <p className="text-xl font-bold text-green-600">{formatCurrency(budgetActual)}</p>
+            </div>
+            <div className="h-8 w-px bg-gray-200"></div>
+            <div className="flex-1 text-center">
+              <p className="text-xs font-medium text-gray-500 mb-1">Remaining</p>
+              <p className={`text-xl font-bold ${budgetPlanned - budgetActual >= 0 ? 'text-gray-900' : 'text-red-600'}`}>
+                {formatCurrency(budgetPlanned - budgetActual)}
+              </p>
+            </div>
           </div>
         </div>
       )}

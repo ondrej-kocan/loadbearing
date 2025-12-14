@@ -13,24 +13,22 @@ export default function BottomNav() {
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 safe-area-inset-bottom">
-      <div className="flex justify-around items-center h-16 max-w-7xl mx-auto">
+    <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 safe-area-inset-bottom shadow-lg">
+      <div className="flex justify-around items-center h-14 max-w-7xl mx-auto">
         {links.map((link) => {
           const isActive = pathname === link.href;
           return (
             <Link
               key={link.href}
               href={link.href}
-              className={`flex flex-col items-center justify-center flex-1 h-full transition-colors ${
+              className={`flex items-center justify-center flex-1 h-full transition-all ${
                 isActive
-                  ? 'text-blue-600'
-                  : 'text-gray-600 hover:text-gray-900'
+                  ? 'text-blue-600 scale-110'
+                  : 'text-gray-500 hover:text-gray-900'
               }`}
+              aria-label={link.label}
             >
-              <span className="text-2xl mb-1">{link.icon}</span>
-              <span className={`text-xs font-medium ${isActive ? 'font-semibold' : ''}`}>
-                {link.label}
-              </span>
+              <span className="text-3xl">{link.icon}</span>
             </Link>
           );
         })}
