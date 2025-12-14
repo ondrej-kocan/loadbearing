@@ -62,13 +62,20 @@ Track progress on Loadbearing features to ensure nothing is lost.
      - If different: "Delayed by 3 days due to 'Find contractor'"
 
 - **Technical Plan**:
-  - [ ] Track date changes - store original scheduled dates
-  - [ ] Enhance scheduling service - detect and report cascading impacts
+  - [x] Track date changes - store original scheduled dates ✅
+  - [x] Enhance scheduling service - detect and report cascading impacts ✅
   - [ ] Update task edit flow - calculate impact before saving, show warning
-  - [ ] Add shift indicators - UI badges showing moved tasks
+  - [x] Add shift indicators - UI badges showing moved tasks ✅
   - [ ] Dashboard timeline context - show delay causes
 
 - **Implementation Approach**: Core rescheduling → visual indicators → warnings
+
+- **Progress Update**:
+  - ✅ Added database fields: `originalStartDate`, `originalEndDate`, `shiftDays`, `shiftCause`
+  - ✅ Enhanced `scheduleForward()` to detect shifts and track causes
+  - ✅ Added yellow badge in TaskList showing shift amount (e.g., "+3 days due to changes")
+  - 🚧 Migration pending: Run `npx prisma migrate dev --name add_timeline_shift_tracking`
+  - ⏳ Next: Edit warnings and dashboard timeline causality
 
 ---
 

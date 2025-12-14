@@ -19,7 +19,7 @@ interface TaskEditFormProps {
 export default function TaskEditForm({ task, onSuccess, onCancel }: TaskEditFormProps) {
   const [name, setName] = useState(task.name);
   const [description, setDescription] = useState(task.description || '');
-  const [durationDays, setDurationDays] = useState(task.durationDays);
+  const [durationDays, setDurationDays] = useState<number | ''>(task.durationDays);
   const [status, setStatus] = useState<'not_started' | 'in_progress' | 'completed'>(task.status);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -36,7 +36,7 @@ export default function TaskEditForm({ task, onSuccess, onCancel }: TaskEditForm
         body: JSON.stringify({
           name,
           description,
-          durationDays,
+          durationDays: durationDays === '' ? 1 : durationDays,
           status
         }),
       });
@@ -96,7 +96,10 @@ export default function TaskEditForm({ task, onSuccess, onCancel }: TaskEditForm
             type="number"
             id="edit-duration"
             value={durationDays}
-            onChange={(e) => setDurationDays(parseInt(e.target.value) || 1)}
+            onChange={(e) => {
+              const value = e.target.value;
+              setDurationDays(value === '' ? '' : parseInt(value));
+            }}
             min="1"
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
             disabled={loading}

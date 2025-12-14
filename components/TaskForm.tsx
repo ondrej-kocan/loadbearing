@@ -11,7 +11,7 @@ interface TaskFormProps {
 export default function TaskForm({ projectId, onSuccess, onCancel }: TaskFormProps) {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
-  const [durationDays, setDurationDays] = useState(1);
+  const [durationDays, setDurationDays] = useState<number | ''>(1);
   const [status, setStatus] = useState<'not_started' | 'in_progress' | 'completed'>('not_started');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -29,7 +29,7 @@ export default function TaskForm({ projectId, onSuccess, onCancel }: TaskFormPro
           projectId,
           name,
           description,
-          durationDays,
+          durationDays: durationDays === '' ? 1 : durationDays,
           status
         }),
       });
@@ -91,7 +91,10 @@ export default function TaskForm({ projectId, onSuccess, onCancel }: TaskFormPro
             type="number"
             id="duration"
             value={durationDays}
-            onChange={(e) => setDurationDays(parseInt(e.target.value) || 1)}
+            onChange={(e) => {
+              const value = e.target.value;
+              setDurationDays(value === '' ? '' : parseInt(value));
+            }}
             min="1"
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             disabled={loading}
