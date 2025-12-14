@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { scheduleForward } from '@/packages/core/src/services/scheduling';
-import type { Task } from '@/packages/core/src/models/task';
+import type { Task, TaskDependency } from '@/packages/core/src/models/task';
 
 export async function POST(
   request: Request,
@@ -57,10 +57,7 @@ export async function POST(
     // Run scheduling with the proposed change
     const proposedResult = scheduleForward(
       modifiedTasks,
-      allDependencies.map((d) => ({
-        taskId: d.taskId,
-        dependsOnId: d.dependsOnTaskId,
-      })),
+      allDependencies as TaskDependency[],
       task.project.startDate
     );
 
