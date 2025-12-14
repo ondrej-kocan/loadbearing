@@ -43,7 +43,7 @@ export async function POST(
         where: {
           OR: [
             { task: { projectId: task.projectId } },
-            { dependsOn: { projectId: task.projectId } },
+            { dependsOnTask: { projectId: task.projectId } },
           ],
         },
       }),
@@ -59,7 +59,7 @@ export async function POST(
       modifiedTasks,
       allDependencies.map((d) => ({
         taskId: d.taskId,
-        dependsOnId: d.dependsOnId,
+        dependsOnId: d.dependsOnTaskId,
       })),
       task.project.startDate
     );
