@@ -26,7 +26,7 @@ export default async function Budget() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-16">
+    <div className="min-h-screen bg-gray-50 pb-14">
       <PageHeader title={project.name} />
 
       {/* Main Content */}
