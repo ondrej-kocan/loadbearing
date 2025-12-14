@@ -65,7 +65,7 @@ export default function TaskEditForm({ task, onSuccess, onCancel }: TaskEditForm
             id="edit-name"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
             required
             disabled={loading}
           />
@@ -80,7 +80,7 @@ export default function TaskEditForm({ task, onSuccess, onCancel }: TaskEditForm
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             rows={2}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
             disabled={loading}
           />
         </div>
@@ -95,7 +95,7 @@ export default function TaskEditForm({ task, onSuccess, onCancel }: TaskEditForm
             value={durationDays}
             onChange={(e) => setDurationDays(parseInt(e.target.value) || 1)}
             min="1"
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
             disabled={loading}
           />
         </div>
