@@ -32,61 +32,64 @@ Track progress on Loadbearing features to ensure nothing is lost.
   2. "Ready to Start" section - shows up to 5 tasks with no blockers
 - **Impact**: Dashboard now answers "What is the state of my renovation?"
 
+### Priority 1: Dependency-Driven Timeline Behavior
+- **Status**: ✅ Completed
+- **Branch**: `claude/dependency-timeline-behavior-90c2o`
+- **Goal**: Make dependencies meaningful - show consequences of changes
+- **Implemented Features**:
+  1. ✅ **Timeline shift tracking**
+     - Database fields: `originalStartDate`, `originalEndDate`, `shiftDays`, `shiftCause`
+     - Enhanced scheduling service detects and tracks timeline shifts
+     - Identifies which dependency caused each shift
+
+  2. ✅ **Visual timeline shift indicators**
+     - Yellow badges in TaskList showing "+X days due to changes"
+     - Appears on tasks that shifted from original schedule
+     - Clear, non-intrusive visual feedback
+
+  3. ✅ **Edit warnings for impactful changes**
+     - Real-time impact calculation when editing task duration
+     - Shows: "Changing duration will affect X tasks, maximum delay: Y days"
+     - Lists specific affected tasks (up to 5) with shift amounts
+     - Debounced API calls (500ms) for smooth UX
+
+  4. ✅ **Dashboard timeline causality**
+     - Timeline card shows original vs current completion dates
+     - Visual indicators: yellow for delays, green for ahead of schedule
+     - "Timeline Changes" section lists shifted tasks
+     - Helps users understand timeline impacts at a glance
+
+- **Technical Implementation**:
+  - [x] Database schema updates for timeline tracking ✅
+  - [x] Enhanced `scheduleForward()` in scheduling service ✅
+  - [x] Impact calculation API endpoint (`/api/tasks/[id]/calculate-impact`) ✅
+  - [x] TaskEditForm with real-time impact warnings ✅
+  - [x] TaskList shift badges ✅
+  - [x] Dashboard timeline causality display ✅
+
+- **Notes**:
+  - 🚧 Migration required: See SQL in session notes or run `npx prisma migrate dev`
+  - Form input bug fixed: Duration field now allows clearing without immediate reset
+  - All features follow calm, plain-language UX philosophy
+
 ---
 
 ## 🚧 In Progress
 
-### Priority 1: Dependency-Driven Timeline Behavior
-- **Status**: 🟡 Planning
-- **Branch**: TBD
-- **Goal**: Make dependencies meaningful - show consequences of changes
-- **Planned Features**:
-  1. **Auto-reschedule dependent tasks**
-     - When a task's duration/dates change → cascade to dependent tasks
-     - Trigger existing scheduling engine on updates
-     - Track which tasks shifted and by how much
-
-  2. **Visual timeline shift indicators**
-     - In task cards: "Moved +3 days due to 'Find architect'"
-     - Track original vs current dates
-     - Color-code shifted tasks (yellow badge)
-
-  3. **Edit warnings for impactful changes**
-     - Before saving: "Changing this will delay 2 tasks"
-     - Show which tasks will be affected
-     - Calm confirmation, not blocking
-
-  4. **Timeline causality on dashboard**
-     - Show original projected end date
-     - Show current end date
-     - If different: "Delayed by 3 days due to 'Find contractor'"
-
-- **Technical Plan**:
-  - [x] Track date changes - store original scheduled dates ✅
-  - [x] Enhance scheduling service - detect and report cascading impacts ✅
-  - [ ] Update task edit flow - calculate impact before saving, show warning
-  - [x] Add shift indicators - UI badges showing moved tasks ✅
-  - [ ] Dashboard timeline context - show delay causes
-
-- **Implementation Approach**: Core rescheduling → visual indicators → warnings
-
-- **Progress Update**:
-  - ✅ Added database fields: `originalStartDate`, `originalEndDate`, `shiftDays`, `shiftCause`
-  - ✅ Enhanced `scheduleForward()` to detect shifts and track causes
-  - ✅ Added yellow badge in TaskList showing shift amount (e.g., "+3 days due to changes")
-  - 🚧 Migration pending: Run `npx prisma migrate dev --name add_timeline_shift_tracking`
-  - ⏳ Next: Edit warnings and dashboard timeline causality
+_No features currently in progress_
 
 ---
 
 ## 📋 Planned (Not Started)
 
 ### Priority 2: Timeline Causality
+- **Status**: ✅ Implemented as part of Priority 1
 - **Goal**: Timeline shows "end date and why" instead of just "end date"
 - **Features**:
-  - Show original vs current projected end date
-  - Display cause of delays: "Delayed due to 'Find contractor' (+2 days)"
-  - Simple text block under date on dashboard
+  - ✅ Show original vs current projected end date
+  - ✅ Display timeline shifts with visual indicators
+  - ✅ "Timeline Changes" section showing shifted tasks
+- **Note**: This was implemented as part of the Priority 1 dashboard enhancements
 
 ### Priority 3: Task ↔ Budget Linkage
 - **Goal**: Connect actions to budget tracking
@@ -106,15 +109,14 @@ Track progress on Loadbearing features to ensure nothing is lost.
 
 ## 🎯 Current Focus
 
-**Priority 1: Dependency-Driven Timeline Behavior**
+**Priority 1: Dependency-Driven Timeline Behavior** ✅ Complete!
 
-This is the core "Loadbearing" value proposition - understanding cascading impacts.
+The core "Loadbearing" feature is now implemented. Users can now:
+- See how task changes cascade through dependencies
+- Get warnings before making impactful edits
+- Understand timeline shifts on the dashboard
 
-Next steps:
-1. Start with auto-reschedule + cascade detection
-2. Add visual shift indicators
-3. Implement edit warnings
-4. Add dashboard timeline context
+**Next Up: Priority 2-4 (awaiting user direction)**
 
 ---
 
