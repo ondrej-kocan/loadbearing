@@ -21,6 +21,8 @@ interface Task {
   status: 'not_started' | 'in_progress' | 'completed';
   startDate: string | null;
   endDate: string | null;
+  shiftDays?: number;
+  shiftCause?: string | null;
   createdAt: string;
   dependencies?: Dependency[];
 }
@@ -236,6 +238,15 @@ export default function TaskList({ tasks, onTaskDeleted, onDependencyUpdate }: T
             {task.startDate && task.endDate && (
               <span className="text-xs text-blue-600 font-medium">
                 {formatDate(task.startDate)} → {formatDate(task.endDate)}
+              </span>
+            )}
+            {task.shiftDays && task.shiftDays !== 0 && task.shiftCause && (
+              <span
+                className="px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800"
+                title={`Task dates shifted due to dependency changes`}
+              >
+                {task.shiftDays > 0 ? '+' : ''}{task.shiftDays} {Math.abs(task.shiftDays) === 1 ? 'day' : 'days'}
+                {' due to changes'}
               </span>
             )}
           </div>
