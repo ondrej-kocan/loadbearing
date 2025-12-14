@@ -32,16 +32,20 @@ enum TaskStatus {
 }
 
 model Task {
-  id           String     @id @default(cuid())
-  projectId    String
-  name         String
-  description  String?
-  durationDays Int        @default(1)
-  status       TaskStatus @default(not_started)
-  startDate    DateTime?
-  endDate      DateTime?
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
+  id                    String     @id @default(cuid())
+  projectId             String
+  name                  String
+  description           String?
+  durationDays          Int        @default(1)
+  status                TaskStatus @default(not_started)
+  startDate             DateTime?
+  endDate               DateTime?
+  originalStartDate     DateTime?  // Track original scheduled start for shift detection
+  originalEndDate       DateTime?  // Track original scheduled end for shift detection
+  shiftDays             Int        @default(0) // How many days this task has shifted
+  shiftCause            String?    // Task ID that caused the shift
+  createdAt             DateTime   @default(now())
+  updatedAt             DateTime   @updatedAt
 
   project           Project          @relation(fields: [projectId], references: [id], onDelete: Cascade)
   dependencies      TaskDependency[] @relation("TaskDependencies")
