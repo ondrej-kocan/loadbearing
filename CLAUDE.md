@@ -253,6 +253,43 @@ See `README.md` for:
 - Deployment guide
 - Feature documentation
 
+## Implementation Status Tracking
+
+**IMPORTANT**: Always maintain `IMPLEMENTATION_STATUS.md` to track progress across sessions.
+
+### When to Update
+
+Update `IMPLEMENTATION_STATUS.md` whenever you:
+1. **Complete a feature** - Move from "In Progress" to "Completed"
+2. **Start new work** - Add to "In Progress" section with detailed plan
+3. **Change priorities** - Update the "Current Focus" section
+4. **Discover new requirements** - Add to "Planned" section
+
+### What to Track
+
+For each feature, document:
+- **Status**: ✅ Completed, 🚧 In Progress, 📋 Planned
+- **Branch name**: For traceability
+- **What it does**: Brief description of the feature
+- **Technical details**: Key implementation points
+- **Impact**: What user problem it solves
+
+### Update Process
+
+1. Read the current status file
+2. Update relevant sections
+3. Commit changes on the same branch as your work
+4. Example commit message: "Update implementation status - complete dashboard improvements"
+
+### Why This Matters
+
+- Prevents losing progress when sessions reset
+- Provides clear handoff between sessions
+- Documents decision-making and priorities
+- Helps user track what's been built
+
+**Golden Rule**: If you complete, start, or plan a feature → update `IMPLEMENTATION_STATUS.md`
+
 ## Questions to Ask
 
 If you're unsure about any of these, ask the user:
