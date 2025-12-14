@@ -5,11 +5,17 @@ import BudgetEditForm from './BudgetEditForm';
 
 interface BudgetItem {
   id: string;
+  projectId: string;
+  taskId: string | null;
   area: string;
   description: string;
   plannedAmount: number;
   actualAmount: number | null;
   createdAt: string;
+  task?: {
+    id: string;
+    name: string;
+  } | null;
 }
 
 interface BudgetListProps {
@@ -107,6 +113,11 @@ export default function BudgetList({ budgetItems, onBudgetDeleted }: BudgetListP
                 <div className="flex items-center justify-between py-2 px-3 hover:bg-gray-50 rounded">
                   <div className="flex-1">
                     <p className="text-sm font-medium text-gray-900">{item.description}</p>
+                    {item.task && (
+                      <p className="text-xs text-gray-500 mt-1">
+                        🔗 Linked to: {item.task.name}
+                      </p>
+                    )}
                   </div>
                   <div className="flex items-center gap-4">
                     <div className="text-right">

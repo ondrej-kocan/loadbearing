@@ -16,6 +16,14 @@ export async function GET(request: Request) {
 
     const budgetItems = await prisma.budgetItem.findMany({
       where: { projectId },
+      include: {
+        task: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
       orderBy: { createdAt: 'asc' },
     });
 
