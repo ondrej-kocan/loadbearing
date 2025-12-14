@@ -9,9 +9,23 @@ interface Project {
   startDate: string;
 }
 
+interface Dependency {
+  id: string;
+  dependsOnTaskId: string;
+  dependsOnTask: {
+    id: string;
+    name: string;
+  };
+}
+
 interface Task {
   id: string;
+  name: string;
+  durationDays: number;
+  status: 'not_started' | 'in_progress' | 'completed';
+  startDate: string | null;
   endDate: string | null;
+  dependencies?: Dependency[];
 }
 
 interface BudgetItem {
@@ -90,6 +104,36 @@ export default function ProjectOverview({ project }: ProjectOverviewProps) {
     }).format(amount);
   };
 
+  // Get active (incomplete) dependencies for a task
+  const getActiveDependencies = (task: Task): Dependency[] => {
+    if (!task.dependencies) return [];
+    return task.dependencies.filter(dep => {
+      const dependencyTask = tasks.find(t => t.id === dep.dependsOnTaskId);
+      return dependencyTask && dependencyTask.status !== 'completed';
+    });
+  };
+
+  // Get tasks ready to start (no active blockers)
+  const getReadyTasks = (): Task[] => {
+    return tasks
+      .filter(task =>
+        task.status === 'not_started' &&
+        getActiveDependencies(task).length === 0
+      )
+      .slice(0, 5); // Limit to 5 tasks
+  };
+
+  // Calculate task status counts
+  const tasksByStatus = {
+    completed: tasks.filter(t => t.status === 'completed').length,
+    in_progress: tasks.filter(t => t.status === 'in_progress').length,
+    not_started: tasks.filter(t => t.status === 'not_started').length,
+  };
+
+  const completionPercentage = tasks.length > 0
+    ? Math.round((tasksByStatus.completed / tasks.length) * 100)
+    : 0;
+
   if (loading) {
     return (
       <div className="text-center py-12">
@@ -110,13 +154,47 @@ export default function ProjectOverview({ project }: ProjectOverviewProps) {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* Tasks Card */}
+        {/* Tasks Card - Status Breakdown */}
         <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-2">Tasks</h2>
-          <p className="text-3xl font-bold text-blue-600">{tasks.length}</p>
-          <p className="text-sm text-gray-500 mt-1">
-            {tasks.length === 0 ? 'No tasks yet' : `${tasks.length} ${tasks.length === 1 ? 'task' : 'tasks'}`}
-          </p>
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">Tasks</h2>
+          {tasks.length > 0 ? (
+            <>
+              {/* Progress Bar */}
+              <div className="mb-4">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm font-medium text-gray-700">Progress</span>
+                  <span className="text-sm font-semibold text-blue-600">{completionPercentage}%</span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-2">
+                  <div
+                    className="bg-blue-600 h-2 rounded-full transition-all"
+                    style={{ width: `${completionPercentage}%` }}
+                  />
+                </div>
+              </div>
+
+              {/* Status Counts */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-gray-600">✓ Completed</span>
+                  <span className="font-semibold text-green-700">{tasksByStatus.completed}</span>
+                </div>
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-gray-600">⚡ In Progress</span>
+                  <span className="font-semibold text-blue-700">{tasksByStatus.in_progress}</span>
+                </div>
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-gray-600">○ Not Started</span>
+                  <span className="font-semibold text-gray-700">{tasksByStatus.not_started}</span>
+                </div>
+              </div>
+            </>
+          ) : (
+            <>
+              <p className="text-3xl font-bold text-blue-600">0</p>
+              <p className="text-sm text-gray-500 mt-1">No tasks yet</p>
+            </>
+          )}
         </div>
 
         {/* Budget Card */}
@@ -160,6 +238,43 @@ export default function ProjectOverview({ project }: ProjectOverviewProps) {
           )}
         </div>
       </div>
+
+      {/* Next Actions - Ready to Start */}
+      {tasks.length > 0 && getReadyTasks().length > 0 && (
+        <div className="mt-8 bg-white rounded-lg shadow p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-semibold text-gray-900">Ready to Start</h2>
+            <a
+              href="/tasks"
+              className="text-sm text-blue-600 hover:text-blue-800 font-medium"
+            >
+              View all tasks →
+            </a>
+          </div>
+          <p className="text-sm text-gray-600 mb-4">
+            Tasks with no blockers that you can work on now
+          </p>
+          <div className="space-y-3">
+            {getReadyTasks().map((task) => (
+              <a
+                key={task.id}
+                href="/tasks"
+                className="block p-4 border border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-colors"
+              >
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <h3 className="font-medium text-gray-900">{task.name}</h3>
+                    <p className="text-sm text-gray-500 mt-1">
+                      Duration: {task.durationDays} {task.durationDays === 1 ? 'day' : 'days'}
+                    </p>
+                  </div>
+                  <span className="ml-4 text-gray-400">→</span>
+                </div>
+              </a>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Quick Actions */}
       {tasks.length === 0 && budgetItems.length === 0 && (
