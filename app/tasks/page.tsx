@@ -1,22 +1,22 @@
 import { prisma } from '@/lib/prisma';
-import CreateProject from '@/components/CreateProject';
 import Sidebar from '@/components/Sidebar';
-import ProjectOverview from '@/components/ProjectOverview';
+import TasksPage from '@/components/TasksPage';
 
 export const dynamic = 'force-dynamic';
 
-export default async function Home() {
-  // Fetch the single project (if it exists)
+export default async function Tasks() {
   const project = await prisma.project.findFirst({
     orderBy: { createdAt: 'desc' },
   });
 
-  // If no project exists, show the creation form
   if (!project) {
-    return <CreateProject />;
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <p className="text-gray-500">No project found. Please create a project first.</p>
+      </div>
+    );
   }
 
-  // Serialize dates for client component
   const serializedProject = {
     ...project,
     startDate: project.startDate.toISOString(),
@@ -28,7 +28,7 @@ export default async function Home() {
     <div className="flex min-h-screen bg-gray-50">
       <Sidebar projectName={project.name} />
       <div className="flex-1 p-8">
-        <ProjectOverview project={serializedProject} />
+        <TasksPage project={serializedProject} />
       </div>
     </div>
   );
