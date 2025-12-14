@@ -20,7 +20,7 @@ export default function PageHeader({ title }: PageHeaderProps) {
 
   return (
     <div
-      className={`bg-white border-b border-gray-200 sticky top-0 z-10 transition-all duration-300 ${
+      className={`sm:hidden bg-white border-b border-gray-200 sticky top-0 z-10 transition-all duration-300 ${
         isScrolled
           ? 'py-2 bg-white/95 backdrop-blur-sm shadow-sm'
           : 'py-4'

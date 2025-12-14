@@ -17,7 +17,7 @@ export default function Sidebar({ projectName }: SidebarProps) {
   ];
 
   return (
-    <aside className="hidden sm:flex sm:flex-col sm:w-64 bg-white border-r border-gray-200 min-h-screen">
+    <aside className="hidden sm:flex sm:flex-col sm:fixed sm:top-0 sm:left-0 sm:w-64 sm:h-screen bg-white border-r border-gray-200 overflow-y-auto">
       {/* Sidebar Header */}
       <div className="p-6 border-b border-gray-200">
         <h1 className="text-lg font-bold text-gray-900">{projectName}</h1>
