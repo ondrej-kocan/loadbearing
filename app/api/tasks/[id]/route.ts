@@ -9,7 +9,7 @@ export async function PUT(
   try {
     const { id } = await params;
     const body = await request.json();
-    const { name, description, durationDays } = body;
+    const { name, description, durationDays, status } = body;
 
     if (!name) {
       return NextResponse.json(
@@ -24,6 +24,7 @@ export async function PUT(
         name: name.trim(),
         description: description?.trim() || null,
         durationDays: durationDays || 1,
+        ...(status && { status }),
         updatedAt: new Date(),
       },
     });

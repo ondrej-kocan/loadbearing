@@ -81,7 +81,7 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { projectId, name, description, durationDays } = body;
+    const { projectId, name, description, durationDays, status } = body;
 
     if (!projectId || !name) {
       return NextResponse.json(
@@ -96,6 +96,7 @@ export async function POST(request: Request) {
         name: name.trim(),
         description: description?.trim() || null,
         durationDays: durationDays || 1,
+        status: status || 'not_started',
       },
     });
 

@@ -12,6 +12,7 @@ export default function TaskForm({ projectId, onSuccess, onCancel }: TaskFormPro
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [durationDays, setDurationDays] = useState(1);
+  const [status, setStatus] = useState<'not_started' | 'in_progress' | 'completed'>('not_started');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -28,7 +29,8 @@ export default function TaskForm({ projectId, onSuccess, onCancel }: TaskFormPro
           projectId,
           name,
           description,
-          durationDays
+          durationDays,
+          status
         }),
       });
 
@@ -94,6 +96,23 @@ export default function TaskForm({ projectId, onSuccess, onCancel }: TaskFormPro
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             disabled={loading}
           />
+        </div>
+
+        <div>
+          <label htmlFor="status" className="block text-sm font-medium text-gray-700 mb-1">
+            Status
+          </label>
+          <select
+            id="status"
+            value={status}
+            onChange={(e) => setStatus(e.target.value as 'not_started' | 'in_progress' | 'completed')}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+            disabled={loading}
+          >
+            <option value="not_started">Not Started</option>
+            <option value="in_progress">In Progress</option>
+            <option value="completed">Completed</option>
+          </select>
         </div>
 
         {error && (

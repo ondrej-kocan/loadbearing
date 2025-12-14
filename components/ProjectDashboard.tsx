@@ -20,6 +20,7 @@ interface Task {
   name: string;
   description: string | null;
   durationDays: number;
+  status: 'not_started' | 'in_progress' | 'completed';
   startDate: string | null;
   endDate: string | null;
   createdAt: string;
