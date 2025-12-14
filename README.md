@@ -80,7 +80,7 @@ Open [http://localhost:3000](http://localhost:3000) to see the app.
 - **Task**: Individual tasks with duration and dependencies
 - **TaskDependency**: Finish-to-start dependencies between tasks
 - **BudgetItem**: Budget tracking by area (planned vs actual)
-- **ShareToken**: Read-only share links
+- **ShareToken**: Read-only share links (model exists, UI not yet implemented)
 
 ## Domain Logic
 
@@ -162,10 +162,34 @@ Make sure these are set in Vercel:
 - `DATABASE_URL` - Automatically set when you add Vercel Postgres
 - `NEXT_PUBLIC_APP_URL` - Your production URL (e.g., `https://loadbearing.vercel.app`)
 
-## MVP Scope
+## Current Features
 
-1. Single project management
-2. Tasks with finish-to-start dependencies
-3. Auto-scheduled timeline (Gantt-style)
-4. Budget tracking by area
-5. Read-only share links
+### Implemented
+1. **Project Management** - Single renovation project container
+2. **Task Management**
+   - Create, edit, and delete tasks
+   - Custom duration (in days)
+   - Task descriptions
+   - Inline editing interface
+3. **Task Dependencies**
+   - Finish-to-start dependency model
+   - Cycle detection (prevents circular dependencies)
+   - Auto-scheduling with forward scheduling algorithm
+   - Visual indication of blocking tasks
+4. **Budget Tracking**
+   - Create, edit, and delete budget items
+   - Organized by area (Kitchen, Bathroom, etc.)
+   - Planned vs. actual amount tracking
+   - Budget summaries and totals
+   - Inline editing interface
+5. **Timeline Calculation**
+   - Auto-scheduled dates for all tasks
+   - Project completion date based on latest task end date
+
+### Planned Features
+- **Task Status Tracking** - Track progress (not started, in progress, completed)
+- **Gantt Chart Visualization** - Visual timeline of tasks and dependencies
+- **Date Picker** - Calendar UI for project start date
+- **Filtering & Sorting** - Filter tasks by status, sort by date
+- **Export Functionality** - Export to CSV/PDF
+- **Read-only Share Links** - Share project view with contractors/family

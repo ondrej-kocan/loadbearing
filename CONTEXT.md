@@ -13,12 +13,23 @@ Target user
 	•	Non-professional, calm UX
 	•	Plain language (“blocked by”, not PM jargon)
 
-MVP scope
-	1.	Project
-	2.	Tasks with dependencies (finish-to-start only)
-	3.	Auto-scheduled timeline
-	4.	Budget tracking by area
-	5.	Read-only share link
+Current Implementation Status
+
+Implemented Features:
+	1.	Project management (single project)
+	2.	Task CRUD with inline editing
+	3.	Task dependencies (finish-to-start, cycle detection)
+	4.	Auto-scheduled timeline (forward scheduling algorithm)
+	5.	Budget tracking by area with inline editing
+	6.	Budget summaries (planned vs actual)
+
+Next Priority Features:
+	1.	Task status tracking (not started, in progress, completed)
+	2.	Gantt chart visualization
+	3.	Date picker for project start date
+	4.	Task filtering and sorting
+	5.	Export functionality (CSV/PDF)
+	6.	Read-only share links (lower priority)
 
 Design principles
 	•	Single project mindset
