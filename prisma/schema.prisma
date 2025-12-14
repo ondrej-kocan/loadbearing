@@ -25,16 +25,23 @@ model Project {
   @@map("projects")
 }
 
+enum TaskStatus {
+  not_started
+  in_progress
+  completed
+}
+
 model Task {
-  id           String    @id @default(cuid())
+  id           String     @id @default(cuid())
   projectId    String
   name         String
   description  String?
-  durationDays Int       @default(1)
+  durationDays Int        @default(1)
+  status       TaskStatus @default(not_started)
   startDate    DateTime?
   endDate      DateTime?
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
 
   project           Project          @relation(fields: [projectId], references: [id], onDelete: Cascade)
   dependencies      TaskDependency[] @relation("TaskDependencies")

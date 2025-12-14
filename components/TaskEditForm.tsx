@@ -7,6 +7,7 @@ interface Task {
   name: string;
   description: string | null;
   durationDays: number;
+  status: 'not_started' | 'in_progress' | 'completed';
 }
 
 interface TaskEditFormProps {
@@ -19,6 +20,7 @@ export default function TaskEditForm({ task, onSuccess, onCancel }: TaskEditForm
   const [name, setName] = useState(task.name);
   const [description, setDescription] = useState(task.description || '');
   const [durationDays, setDurationDays] = useState(task.durationDays);
+  const [status, setStatus] = useState<'not_started' | 'in_progress' | 'completed'>(task.status);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -34,7 +36,8 @@ export default function TaskEditForm({ task, onSuccess, onCancel }: TaskEditForm
         body: JSON.stringify({
           name,
           description,
-          durationDays
+          durationDays,
+          status
         }),
       });
 
@@ -98,6 +101,23 @@ export default function TaskEditForm({ task, onSuccess, onCancel }: TaskEditForm
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
             disabled={loading}
           />
+        </div>
+
+        <div>
+          <label htmlFor="edit-status" className="block text-sm font-medium text-gray-700 mb-1">
+            Status
+          </label>
+          <select
+            id="edit-status"
+            value={status}
+            onChange={(e) => setStatus(e.target.value as 'not_started' | 'in_progress' | 'completed')}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+            disabled={loading}
+          >
+            <option value="not_started">Not Started</option>
+            <option value="in_progress">In Progress</option>
+            <option value="completed">Completed</option>
+          </select>
         </div>
 
         {error && (

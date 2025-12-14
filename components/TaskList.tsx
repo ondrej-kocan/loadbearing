@@ -18,6 +18,7 @@ interface Task {
   name: string;
   description: string | null;
   durationDays: number;
+  status: 'not_started' | 'in_progress' | 'completed';
   startDate: string | null;
   endDate: string | null;
   createdAt: string;
@@ -70,6 +71,26 @@ export default function TaskList({ tasks, onTaskDeleted, onDependencyUpdate }: T
     });
   };
 
+  const getStatusStyle = (status: 'not_started' | 'in_progress' | 'completed') => {
+    switch (status) {
+      case 'not_started':
+        return {
+          label: 'Not Started',
+          className: 'bg-gray-100 text-gray-700',
+        };
+      case 'in_progress':
+        return {
+          label: 'In Progress',
+          className: 'bg-blue-100 text-blue-700',
+        };
+      case 'completed':
+        return {
+          label: 'Completed',
+          className: 'bg-green-100 text-green-700',
+        };
+    }
+  };
+
   // Calculate which tasks are blocked by this task (reverse dependencies)
   const getBlockingTasks = (taskId: string): Task[] => {
     return tasks.filter(task =>
@@ -94,7 +115,12 @@ export default function TaskList({ tasks, onTaskDeleted, onDependencyUpdate }: T
         >
           <div className="flex items-start justify-between">
             <div className="flex-1">
-              <h3 className="font-medium text-gray-900">{task.name}</h3>
+              <div className="flex items-center gap-2">
+                <h3 className="font-medium text-gray-900">{task.name}</h3>
+                <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${getStatusStyle(task.status).className}`}>
+                  {getStatusStyle(task.status).label}
+                </span>
+              </div>
               {task.description && (
                 <p className="text-sm text-gray-600 mt-1">{task.description}</p>
               )}

@@ -8,6 +8,7 @@ export interface Task {
   name: string;
   description: string | null;
   durationDays: number;
+  status: TaskStatus;
   startDate: Date | null;
   endDate: Date | null;
   createdAt: Date;
