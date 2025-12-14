@@ -33,7 +33,7 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { projectId, area, description, plannedAmount, actualAmount } = body;
+    const { projectId, area, description, plannedAmount, actualAmount, taskId } = body;
 
     if (!projectId || !area || !description || plannedAmount === undefined) {
       return NextResponse.json(
@@ -49,6 +49,7 @@ export async function POST(request: Request) {
         description: description.trim(),
         plannedAmount,
         actualAmount: actualAmount || null,
+        taskId: taskId || null,
       },
     });
 

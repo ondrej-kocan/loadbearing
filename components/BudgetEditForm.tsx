@@ -1,9 +1,16 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+
+interface Task {
+  id: string;
+  name: string;
+}
 
 interface BudgetItem {
   id: string;
+  projectId: string;
+  taskId: string | null;
   area: string;
   description: string;
   plannedAmount: number;
@@ -23,8 +30,27 @@ export default function BudgetEditForm({ budgetItem, onSuccess, onCancel }: Budg
   const [actualAmount, setActualAmount] = useState(
     budgetItem.actualAmount !== null ? budgetItem.actualAmount.toString() : ''
   );
+  const [taskId, setTaskId] = useState<string>(budgetItem.taskId || '');
+  const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  // Fetch tasks for the project
+  useEffect(() => {
+    const fetchTasks = async () => {
+      try {
+        const response = await fetch(`/api/tasks?projectId=${budgetItem.projectId}`);
+        if (response.ok) {
+          const data = await response.json();
+          setTasks(data.tasks || []);
+        }
+      } catch (err) {
+        console.error('Failed to fetch tasks:', err);
+      }
+    };
+
+    fetchTasks();
+  }, [budgetItem.projectId]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -40,6 +66,7 @@ export default function BudgetEditForm({ budgetItem, onSuccess, onCancel }: Budg
           description,
           plannedAmount: parseFloat(plannedAmount),
           actualAmount: actualAmount ? parseFloat(actualAmount) : null,
+          taskId: taskId || null,
         }),
       });
 
@@ -89,6 +116,26 @@ export default function BudgetEditForm({ budgetItem, onSuccess, onCancel }: Budg
             required
             disabled={loading}
           />
+        </div>
+
+        <div>
+          <label htmlFor="edit-task" className="block text-sm font-medium text-gray-700 mb-1">
+            Link to Task (Optional)
+          </label>
+          <select
+            id="edit-task"
+            value={taskId}
+            onChange={(e) => setTaskId(e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-900"
+            disabled={loading}
+          >
+            <option value="">No task linked</option>
+            {tasks.map((task) => (
+              <option key={task.id} value={task.id}>
+                {task.name}
+              </option>
+            ))}
+          </select>
         </div>
 
         <div className="grid grid-cols-2 gap-3">
