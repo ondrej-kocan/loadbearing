@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 interface Task {
   id: string;
@@ -16,6 +16,16 @@ interface TaskEditFormProps {
   onCancel: () => void;
 }
 
+interface ImpactData {
+  totalAffected: number;
+  maxShift: number;
+  impacts: Array<{
+    taskId: string;
+    taskName: string;
+    shiftDays: number;
+  }>;
+}
+
 export default function TaskEditForm({ task, onSuccess, onCancel }: TaskEditFormProps) {
   const [name, setName] = useState(task.name);
   const [description, setDescription] = useState(task.description || '');
@@ -23,6 +33,46 @@ export default function TaskEditForm({ task, onSuccess, onCancel }: TaskEditForm
   const [status, setStatus] = useState<'not_started' | 'in_progress' | 'completed'>(task.status);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [impact, setImpact] = useState<ImpactData | null>(null);
+  const [calculatingImpact, setCalculatingImpact] = useState(false);
+
+  // Calculate impact when duration changes
+  useEffect(() => {
+    const calculateImpact = async () => {
+      const newDuration = durationDays === '' ? 1 : durationDays;
+
+      // Only calculate if duration actually changed
+      if (newDuration === task.durationDays) {
+        setImpact(null);
+        return;
+      }
+
+      setCalculatingImpact(true);
+      try {
+        const response = await fetch(`/api/tasks/${task.id}/calculate-impact`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ durationDays: newDuration }),
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setImpact(data);
+        } else {
+          setImpact(null);
+        }
+      } catch (err) {
+        console.error('Failed to calculate impact:', err);
+        setImpact(null);
+      } finally {
+        setCalculatingImpact(false);
+      }
+    };
+
+    // Debounce the impact calculation
+    const timeoutId = setTimeout(calculateImpact, 500);
+    return () => clearTimeout(timeoutId);
+  }, [durationDays, task.id, task.durationDays]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -122,6 +172,44 @@ export default function TaskEditForm({ task, onSuccess, onCancel }: TaskEditForm
             <option value="completed">Completed</option>
           </select>
         </div>
+
+        {calculatingImpact && (
+          <div className="bg-gray-50 border border-gray-200 text-gray-600 px-4 py-3 rounded text-sm">
+            Calculating impact on dependent tasks...
+          </div>
+        )}
+
+        {impact && impact.totalAffected > 0 && (
+          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+            <div className="flex items-start gap-2">
+              <svg className="w-5 h-5 text-yellow-600 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+              </svg>
+              <div className="flex-1">
+                <p className="text-sm font-medium text-yellow-800">
+                  Changing duration will affect {impact.totalAffected} {impact.totalAffected === 1 ? 'task' : 'tasks'}
+                </p>
+                <p className="text-xs text-yellow-700 mt-1">
+                  Maximum delay: {impact.maxShift} {impact.maxShift === 1 ? 'day' : 'days'}
+                </p>
+                {impact.impacts.length > 0 && impact.impacts.length <= 5 && (
+                  <ul className="mt-2 space-y-1">
+                    {impact.impacts.map((imp) => (
+                      <li key={imp.taskId} className="text-xs text-yellow-700">
+                        • {imp.taskName}: {imp.shiftDays > 0 ? '+' : ''}{imp.shiftDays} {Math.abs(imp.shiftDays) === 1 ? 'day' : 'days'}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                {impact.impacts.length > 5 && (
+                  <p className="text-xs text-yellow-700 mt-1">
+                    {impact.impacts.slice(0, 3).map(imp => imp.taskName).join(', ')} and {impact.impacts.length - 3} more...
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
 
         {error && (
           <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded text-sm">
