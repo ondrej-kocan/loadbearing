@@ -32,7 +32,7 @@ export default async function Home() {
       <Sidebar projectName={project.name} />
 
       {/* Main Content Area */}
-      <div className="flex-1 pb-14 md:pb-0">
+      <div className="flex-1 pb-14 sm:pb-0">
         <PageHeader title={project.name} />
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
