@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/prisma';
 import BottomNav from '@/components/BottomNav';
+import Sidebar from '@/components/Sidebar';
 import PageHeader from '@/components/PageHeader';
 import TasksPage from '@/components/TasksPage';
 
@@ -26,15 +27,20 @@ export default async function Tasks() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-14">
-      <PageHeader title={project.name} />
+    <div className="flex min-h-screen bg-gray-50">
+      {/* Sidebar - Desktop only */}
+      <Sidebar projectName={project.name} />
 
-      {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <TasksPage project={serializedProject} />
+      {/* Main Content Area */}
+      <div className="flex-1 pb-14 sm:pb-0 sm:ml-64">
+        <PageHeader title={project.name} />
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <TasksPage project={serializedProject} />
+        </div>
       </div>
 
-      {/* Bottom Navigation */}
+      {/* Bottom Navigation - Mobile only */}
       <BottomNav />
     </div>
   );
