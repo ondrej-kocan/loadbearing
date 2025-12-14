@@ -139,6 +139,15 @@ export default function TaskList({ tasks, onTaskDeleted, onDependencyUpdate }: T
     );
   };
 
+  // Get active (incomplete) dependencies for a task
+  const getActiveDependencies = (task: Task): Dependency[] => {
+    if (!task.dependencies) return [];
+    return task.dependencies.filter(dep => {
+      const dependencyTask = tasks.find(t => t.id === dep.dependsOnTaskId);
+      return dependencyTask && dependencyTask.status !== 'completed';
+    });
+  };
+
   const toggleSection = (section: 'in_progress' | 'not_started' | 'completed') => {
     setExpandedSections(prev => ({
       ...prev,
@@ -193,8 +202,8 @@ export default function TaskList({ tasks, onTaskDeleted, onDependencyUpdate }: T
         <div className="flex-1">
           <div className="flex items-center gap-2 flex-wrap">
             <div className="flex items-center gap-1.5">
-              {task.dependencies && task.dependencies.length > 0 && (
-                <span className="text-gray-400" title={`Blocked by ${task.dependencies.length} ${task.dependencies.length === 1 ? 'task' : 'tasks'}`}>
+              {getActiveDependencies(task).length > 0 && (
+                <span className="text-gray-400" title={`Blocked by ${getActiveDependencies(task).length} incomplete ${getActiveDependencies(task).length === 1 ? 'task' : 'tasks'}`}>
                   🔒
                 </span>
               )}
