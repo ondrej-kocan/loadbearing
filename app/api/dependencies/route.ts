@@ -63,7 +63,7 @@ export async function POST(request: Request) {
 
     // Add the new dependency temporarily to check for cycles
     const newDependencies = [
-      ...allDependencies.map(d => ({
+      ...allDependencies.map((d: any) => ({
         id: d.id,
         taskId: d.taskId,
         dependsOnTaskId: d.dependsOnTaskId,
