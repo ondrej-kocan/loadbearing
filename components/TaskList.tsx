@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import DependencyManager from './DependencyManager';
+import TaskEditForm from './TaskEditForm';
 
 interface Dependency {
   id: string;
@@ -31,6 +32,7 @@ interface TaskListProps {
 
 export default function TaskList({ tasks, onTaskDeleted, onDependencyUpdate }: TaskListProps) {
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
 
   const handleDelete = async (taskId: string) => {
     if (!confirm('Are you sure you want to delete this task?')) {
@@ -53,6 +55,11 @@ export default function TaskList({ tasks, onTaskDeleted, onDependencyUpdate }: T
       alert(err instanceof Error ? err.message : 'Failed to delete task');
       setDeletingId(null);
     }
+  };
+
+  const handleEditSuccess = () => {
+    setEditingId(null);
+    onTaskDeleted(); // Reuse this callback to refresh data
   };
 
   const formatDate = (dateStr: string | null) => {
@@ -120,14 +127,32 @@ export default function TaskList({ tasks, onTaskDeleted, onDependencyUpdate }: T
                 </div>
               )}
             </div>
-            <button
-              onClick={() => handleDelete(task.id)}
-              disabled={deletingId === task.id}
-              className="ml-4 text-red-600 hover:text-red-800 text-sm font-medium disabled:opacity-50"
-            >
-              {deletingId === task.id ? 'Deleting...' : 'Delete'}
-            </button>
+            <div className="ml-4 flex gap-2">
+              <button
+                onClick={() => setEditingId(task.id)}
+                disabled={deletingId === task.id || editingId !== null}
+                className="text-blue-600 hover:text-blue-800 text-sm font-medium disabled:opacity-50"
+              >
+                Edit
+              </button>
+              <button
+                onClick={() => handleDelete(task.id)}
+                disabled={deletingId === task.id || editingId !== null}
+                className="text-red-600 hover:text-red-800 text-sm font-medium disabled:opacity-50"
+              >
+                {deletingId === task.id ? 'Deleting...' : 'Delete'}
+              </button>
+            </div>
           </div>
+
+          {/* Inline Edit Form */}
+          {editingId === task.id && (
+            <TaskEditForm
+              task={task}
+              onSuccess={handleEditSuccess}
+              onCancel={() => setEditingId(null)}
+            />
+          )}
         </div>
       ))}
     </div>

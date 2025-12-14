@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import BudgetEditForm from './BudgetEditForm';
 
 interface BudgetItem {
   id: string;
@@ -18,6 +19,7 @@ interface BudgetListProps {
 
 export default function BudgetList({ budgetItems, onBudgetDeleted }: BudgetListProps) {
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
 
   const handleDelete = async (itemId: string) => {
     if (!confirm('Are you sure you want to delete this budget item?')) {
@@ -40,6 +42,11 @@ export default function BudgetList({ budgetItems, onBudgetDeleted }: BudgetListP
       alert(err instanceof Error ? err.message : 'Failed to delete budget item');
       setDeletingId(null);
     }
+  };
+
+  const handleEditSuccess = () => {
+    setEditingId(null);
+    onBudgetDeleted(); // Reuse this callback to refresh data
   };
 
   const formatCurrency = (amount: number | null) => {
@@ -96,32 +103,49 @@ export default function BudgetList({ budgetItems, onBudgetDeleted }: BudgetListP
           {/* Budget Items */}
           <div className="space-y-2">
             {items.map((item) => (
-              <div
-                key={item.id}
-                className="flex items-center justify-between py-2 px-3 hover:bg-gray-50 rounded"
-              >
-                <div className="flex-1">
-                  <p className="text-sm font-medium text-gray-900">{item.description}</p>
-                </div>
-                <div className="flex items-center gap-4">
-                  <div className="text-right">
-                    <div className="text-sm text-gray-600">
-                      {formatCurrency(item.plannedAmount)}
-                    </div>
-                    {item.actualAmount !== null && (
-                      <div className="text-xs text-green-600">
-                        {formatCurrency(item.actualAmount)} actual
-                      </div>
-                    )}
+              <div key={item.id}>
+                <div className="flex items-center justify-between py-2 px-3 hover:bg-gray-50 rounded">
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-gray-900">{item.description}</p>
                   </div>
-                  <button
-                    onClick={() => handleDelete(item.id)}
-                    disabled={deletingId === item.id}
-                    className="text-red-600 hover:text-red-800 text-sm font-medium disabled:opacity-50"
-                  >
-                    {deletingId === item.id ? 'Deleting...' : 'Delete'}
-                  </button>
+                  <div className="flex items-center gap-4">
+                    <div className="text-right">
+                      <div className="text-sm text-gray-600">
+                        {formatCurrency(item.plannedAmount)}
+                      </div>
+                      {item.actualAmount !== null && (
+                        <div className="text-xs text-green-600">
+                          {formatCurrency(item.actualAmount)} actual
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => setEditingId(item.id)}
+                        disabled={deletingId === item.id || editingId !== null}
+                        className="text-blue-600 hover:text-blue-800 text-sm font-medium disabled:opacity-50"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => handleDelete(item.id)}
+                        disabled={deletingId === item.id || editingId !== null}
+                        className="text-red-600 hover:text-red-800 text-sm font-medium disabled:opacity-50"
+                      >
+                        {deletingId === item.id ? 'Deleting...' : 'Delete'}
+                      </button>
+                    </div>
+                  </div>
                 </div>
+
+                {/* Inline Edit Form */}
+                {editingId === item.id && (
+                  <BudgetEditForm
+                    budgetItem={item}
+                    onSuccess={handleEditSuccess}
+                    onCancel={() => setEditingId(null)}
+                  />
+                )}
               </div>
             ))}
           </div>
