@@ -29,7 +29,7 @@ export default function PageHeader({ title }: PageHeaderProps) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <h1
           className={`font-bold text-gray-900 transition-all duration-300 ${
-            isScrolled ? 'text-lg' : 'text-2xl'
+            isScrolled ? 'text-base' : 'text-2xl'
           }`}
         >
           {title}

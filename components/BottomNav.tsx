@@ -28,7 +28,7 @@ export default function BottomNav() {
               }`}
               aria-label={link.label}
             >
-              <span className="text-3xl">{link.icon}</span>
+              <span className="text-2xl">{link.icon}</span>
             </Link>
           );
         })}
