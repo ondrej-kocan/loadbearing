@@ -157,6 +157,14 @@ export default function ProjectOverview({ project }: ProjectOverviewProps) {
     ? Math.round((tasksByStatus.completed / tasks.length) * 100)
     : 0;
 
+  const inProgressPercentage = tasks.length > 0
+    ? Math.round((tasksByStatus.in_progress / tasks.length) * 100)
+    : 0;
+
+  const notStartedPercentage = tasks.length > 0
+    ? Math.round((tasksByStatus.not_started / tasks.length) * 100)
+    : 0;
+
   if (loading) {
     return (
       <div className="text-center py-12">
@@ -182,33 +190,62 @@ export default function ProjectOverview({ project }: ProjectOverviewProps) {
           <h2 className="text-lg font-semibold text-gray-900 mb-4">Tasks</h2>
           {tasks.length > 0 ? (
             <>
-              {/* Progress Bar */}
+              {/* Segmented Progress Bar */}
               <div className="mb-4">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-sm font-medium text-gray-700">Progress</span>
-                  <span className="text-sm font-semibold text-blue-600">{completionPercentage}%</span>
+                  <span className="text-sm font-semibold text-green-600">{completionPercentage}%</span>
                 </div>
-                <div className="w-full bg-gray-200 rounded-full h-2">
-                  <div
-                    className="bg-blue-600 h-2 rounded-full transition-all"
-                    style={{ width: `${completionPercentage}%` }}
-                  />
+                <div className="w-full bg-gray-200 rounded-full h-2.5 overflow-hidden flex">
+                  {/* Completed segment - Green */}
+                  {completionPercentage > 0 && (
+                    <div
+                      className="bg-green-600 h-full transition-all"
+                      style={{ width: `${completionPercentage}%` }}
+                      title={`${tasksByStatus.completed} completed`}
+                    />
+                  )}
+                  {/* In Progress segment - Yellow */}
+                  {inProgressPercentage > 0 && (
+                    <div
+                      className="bg-yellow-500 h-full transition-all"
+                      style={{ width: `${inProgressPercentage}%` }}
+                      title={`${tasksByStatus.in_progress} in progress`}
+                    />
+                  )}
+                  {/* Not Started segment - Gray (fills remaining space) */}
+                  {notStartedPercentage > 0 && (
+                    <div
+                      className="bg-gray-300 h-full transition-all"
+                      style={{ width: `${notStartedPercentage}%` }}
+                      title={`${tasksByStatus.not_started} not started`}
+                    />
+                  )}
                 </div>
               </div>
 
               {/* Status Counts */}
               <div className="space-y-2">
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-gray-600">✓ Completed</span>
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 bg-green-600 rounded"></div>
+                    <span className="text-gray-700">Completed</span>
+                  </div>
                   <span className="font-semibold text-green-700">{tasksByStatus.completed}</span>
                 </div>
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-gray-600">⚡ In Progress</span>
-                  <span className="font-semibold text-blue-700">{tasksByStatus.in_progress}</span>
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 bg-yellow-500 rounded"></div>
+                    <span className="text-gray-700">In Progress</span>
+                  </div>
+                  <span className="font-semibold text-yellow-700">{tasksByStatus.in_progress}</span>
                 </div>
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-gray-600">○ Not Started</span>
-                  <span className="font-semibold text-gray-700">{tasksByStatus.not_started}</span>
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 bg-gray-300 rounded"></div>
+                    <span className="text-gray-700">Not Started</span>
+                  </div>
+                  <span className="font-semibold text-gray-600">{tasksByStatus.not_started}</span>
                 </div>
               </div>
             </>
