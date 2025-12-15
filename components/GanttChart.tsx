@@ -193,18 +193,16 @@ export default function GanttChart({ tasks, projectStartDate }: GanttChartProps)
             <div className="w-48 flex-shrink-0">
               <span className="text-sm font-medium text-gray-700">Task</span>
             </div>
-            <div className="flex-1 relative">
-              <div className="flex">
-                {timelineLabels.map((date, index) => (
-                  <div
-                    key={index}
-                    className="text-center flex-shrink-0"
-                    style={{ width: '60px' }}
-                  >
-                    <span className="text-xs text-gray-600">{formatDate(date)}</span>
-                  </div>
-                ))}
-              </div>
+            <div className="flex">
+              {timelineLabels.map((date, index) => (
+                <div
+                  key={index}
+                  className="text-center flex-shrink-0"
+                  style={{ width: '60px' }}
+                >
+                  <span className="text-xs text-gray-600">{formatDate(date)}</span>
+                </div>
+              ))}
             </div>
           </div>
 
@@ -227,7 +225,7 @@ export default function GanttChart({ tasks, projectStartDate }: GanttChartProps)
                   </div>
 
                   {/* Task Bar */}
-                  <div className="flex-1 relative h-10">
+                  <div className="relative h-10" style={{ width: `${totalDays * 60}px` }}>
                     {/* Background grid */}
                     <div className="absolute inset-0 flex">
                       {timelineLabels.map((_, index) => (
