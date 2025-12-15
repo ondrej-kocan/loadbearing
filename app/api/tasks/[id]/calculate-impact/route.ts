@@ -50,7 +50,7 @@ export async function POST(
     ]);
 
     // Create a modified version of the tasks with the proposed change
-    const modifiedTasks = allTasks.map((t) =>
+    const modifiedTasks = allTasks.map((t: Task) =>
       t.id === id ? { ...t, durationDays } : t
     ) as Task[];
 
@@ -71,7 +71,7 @@ export async function POST(
     // Compare proposed schedule with current schedule
     const impacts = [];
     for (const proposedTask of proposedResult.scheduledTasks) {
-      const currentTask = allTasks.find((t) => t.id === proposedTask.id);
+      const currentTask = allTasks.find((t: Task) => t.id === proposedTask.id);
       if (
         currentTask &&
         currentTask.id !== id &&

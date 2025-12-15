@@ -12,11 +12,17 @@ interface Project {
 
 interface BudgetItem {
   id: string;
+  projectId: string;
+  taskId: string | null;
   area: string;
   description: string;
   plannedAmount: number;
   actualAmount: number | null;
   createdAt: string;
+  task?: {
+    id: string;
+    name: string;
+  } | null;
 }
 
 interface BudgetPageProps {
