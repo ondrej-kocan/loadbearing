@@ -88,14 +88,13 @@ export default function GanttChart({ tasks, projectStartDate }: GanttChartProps)
     if (!task.startDate || !task.endDate) return null;
 
     const start = new Date(task.startDate);
-    const end = new Date(task.endDate);
 
     const startOffset = Math.floor(
       (start.getTime() - minDate.getTime()) / (1000 * 60 * 60 * 24)
     );
-    const duration = Math.ceil(
-      (end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)
-    );
+
+    // Use the task's durationDays directly for accurate width
+    const duration = task.durationDays;
 
     const leftPercent = (startOffset / totalDays) * 100;
     const widthPercent = (duration / totalDays) * 100;
@@ -129,7 +128,7 @@ export default function GanttChart({ tasks, projectStartDate }: GanttChartProps)
   const getDependencyLines = () => {
     if (!mounted || !containerRef.current) return [];
 
-    const lines: Array<{ path: string; id: string }> = [];
+    const lines: Array<{ path: string; id: string; arrowX: number; arrowY: number; angle: number }> = [];
     const containerRect = containerRef.current.getBoundingClientRect();
 
     tasksWithDates.forEach((task) => {
@@ -154,9 +153,15 @@ export default function GanttChart({ tasks, projectStartDate }: GanttChartProps)
         const midX = (x1 + x2) / 2;
         const path = `M ${x1} ${y1} C ${midX} ${y1}, ${midX} ${y2}, ${x2} ${y2}`;
 
+        // Calculate arrow angle
+        const angle = Math.atan2(y2 - y1, x2 - x1) * (180 / Math.PI);
+
         lines.push({
           path,
           id: `${dep.dependsOnTaskId}-${task.id}`,
+          arrowX: x2,
+          arrowY: y2,
+          angle,
         });
       });
     });
@@ -240,13 +245,9 @@ export default function GanttChart({ tasks, projectStartDate }: GanttChartProps)
                       style={barStyle}
                     >
                       <div
-                        className={`w-full h-full rounded-md ${getStatusColor(task.status)} flex items-center justify-center px-2 shadow-sm hover:shadow-md transition-shadow cursor-pointer`}
+                        className={`w-full h-full rounded-md ${getStatusColor(task.status)} shadow-sm hover:shadow-md transition-shadow cursor-pointer`}
                         title={`${task.name}\n${formatDate(new Date(task.startDate!))} → ${formatDate(new Date(task.endDate!))}\nStatus: ${task.status.replace('_', ' ')}`}
-                      >
-                        <span className="text-xs font-medium text-white truncate">
-                          {task.name}
-                        </span>
-                      </div>
+                      />
                     </div>
                   </div>
                 </div>
@@ -259,23 +260,29 @@ export default function GanttChart({ tasks, projectStartDate }: GanttChartProps)
                 className="absolute top-0 left-0 w-full h-full pointer-events-none"
                 style={{ zIndex: 1 }}
               >
+                <defs>
+                  <marker
+                    id="arrowhead"
+                    markerWidth="10"
+                    markerHeight="10"
+                    refX="9"
+                    refY="3"
+                    orient="auto"
+                    markerUnits="strokeWidth"
+                  >
+                    <polygon points="0 0, 10 3, 0 6" fill="#2563eb" />
+                  </marker>
+                </defs>
                 {dependencyLines.map((line) => (
                   <g key={line.id}>
+                    {/* Main line */}
                     <path
                       d={line.path}
-                      stroke="#3b82f6"
-                      strokeWidth="2"
+                      stroke="#2563eb"
+                      strokeWidth="2.5"
                       fill="none"
-                      strokeDasharray="4 2"
-                      opacity="0.6"
-                    />
-                    {/* Arrow head */}
-                    <circle
-                      cx={line.path.split(' ').slice(-2, -1)[0]}
-                      cy={line.path.split(' ').slice(-1)[0]}
-                      r="3"
-                      fill="#3b82f6"
-                      opacity="0.6"
+                      markerEnd="url(#arrowhead)"
+                      opacity="0.8"
                     />
                   </g>
                 ))}
