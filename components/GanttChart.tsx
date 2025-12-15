@@ -186,10 +186,12 @@ export default function GanttChart({ tasks, projectStartDate }: GanttChartProps)
   }
 
   return (
-    <div className="bg-white rounded-lg shadow p-6 overflow-hidden">
-      <h2 className="text-xl font-semibold text-gray-900 mb-6">Timeline View</h2>
+    <div className="bg-white rounded-lg shadow overflow-hidden">
+      <div className="p-6 pb-0">
+        <h2 className="text-xl font-semibold text-gray-900 mb-6">Timeline View</h2>
+      </div>
 
-      <div className="overflow-x-auto -mx-6 px-6">
+      <div className="overflow-x-auto px-6">
         <div className="inline-block" ref={containerRef}>
           {/* Timeline Header */}
           <div className="flex border-b border-gray-200 pb-2 mb-4">
@@ -292,22 +294,23 @@ export default function GanttChart({ tasks, projectStartDate }: GanttChartProps)
             )}
           </div>
 
-          {/* Legend */}
-          <div className="mt-6 pt-4 border-t border-gray-200 flex items-center gap-6">
-            <span className="text-sm font-medium text-gray-700">Status:</span>
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 bg-green-600 rounded"></div>
-              <span className="text-sm text-gray-600">Completed</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 bg-yellow-500 rounded"></div>
-              <span className="text-sm text-gray-600">In Progress</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 bg-gray-400 rounded"></div>
-              <span className="text-sm text-gray-600">Not Started</span>
-            </div>
-          </div>
+        </div>
+      </div>
+
+      {/* Legend */}
+      <div className="mt-6 pt-4 pb-6 px-6 border-t border-gray-200 flex items-center gap-6">
+        <span className="text-sm font-medium text-gray-700">Status:</span>
+        <div className="flex items-center gap-2">
+          <div className="w-4 h-4 bg-green-600 rounded"></div>
+          <span className="text-sm text-gray-600">Completed</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="w-4 h-4 bg-yellow-500 rounded"></div>
+          <span className="text-sm text-gray-600">In Progress</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="w-4 h-4 bg-gray-400 rounded"></div>
+          <span className="text-sm text-gray-600">Not Started</span>
         </div>
       </div>
     </div>
