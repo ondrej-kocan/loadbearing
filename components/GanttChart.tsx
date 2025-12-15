@@ -83,6 +83,9 @@ export default function GanttChart({ tasks, projectStartDate }: GanttChartProps)
     return labels;
   }, [minDate, maxDate]);
 
+  // Day column width: 40px on mobile, 60px on desktop
+  const dayWidth = 40; // Will be styled responsively with CSS
+
   // Calculate position and width for a task bar
   const getTaskBarStyle = (task: Task) => {
     if (!task.startDate || !task.endDate) return null;
@@ -96,9 +99,9 @@ export default function GanttChart({ tasks, projectStartDate }: GanttChartProps)
     // Use the task's durationDays directly for accurate width
     const duration = task.durationDays;
 
-    // Use pixel-based positioning (60px per day)
-    const leftPx = startOffset * 60;
-    const widthPx = duration * 60;
+    // Use pixel-based positioning
+    const leftPx = startOffset * dayWidth;
+    const widthPx = duration * dayWidth;
 
     return {
       left: `${leftPx}px`,
@@ -190,7 +193,7 @@ export default function GanttChart({ tasks, projectStartDate }: GanttChartProps)
         <div className="inline-block" ref={containerRef}>
           {/* Timeline Header */}
           <div className="flex border-b border-gray-200 pb-2 mb-4">
-            <div className="w-48 flex-shrink-0">
+            <div className="w-32 sm:w-48 flex-shrink-0">
               <span className="text-sm font-medium text-gray-700">Task</span>
             </div>
             <div className="flex">
@@ -198,7 +201,7 @@ export default function GanttChart({ tasks, projectStartDate }: GanttChartProps)
                 <div
                   key={index}
                   className="text-center flex-shrink-0"
-                  style={{ width: '60px' }}
+                  style={{ width: `${dayWidth}px` }}
                 >
                   <span className="text-xs text-gray-600">{formatDate(date)}</span>
                 </div>
@@ -215,24 +218,24 @@ export default function GanttChart({ tasks, projectStartDate }: GanttChartProps)
               return (
                 <div key={task.id} className="flex items-center">
                   {/* Task Name */}
-                  <div className="w-48 flex-shrink-0 pr-4">
-                    <p className="text-sm font-medium text-gray-900 truncate" title={task.name}>
+                  <div className="w-32 sm:w-48 flex-shrink-0 pr-2 sm:pr-4">
+                    <p className="text-xs sm:text-sm font-medium text-gray-900 truncate" title={task.name}>
                       {task.name}
                     </p>
-                    <p className="text-xs text-gray-500">
+                    <p className="text-xs text-gray-500 hidden sm:block">
                       {task.durationDays} {task.durationDays === 1 ? 'day' : 'days'}
                     </p>
                   </div>
 
                   {/* Task Bar */}
-                  <div className="relative h-10" style={{ width: `${totalDays * 60}px` }}>
+                  <div className="relative h-10" style={{ width: `${totalDays * dayWidth}px` }}>
                     {/* Background grid */}
                     <div className="absolute inset-0 flex">
                       {timelineLabels.map((_, index) => (
                         <div
                           key={index}
                           className="border-r border-gray-100 flex-shrink-0"
-                          style={{ width: '60px' }}
+                          style={{ width: `${dayWidth}px` }}
                         />
                       ))}
                     </div>
