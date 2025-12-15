@@ -186,8 +186,8 @@ export default function GanttChart({ tasks, projectStartDate }: GanttChartProps)
     <div className="bg-white rounded-lg shadow p-6">
       <h2 className="text-xl font-semibold text-gray-900 mb-6">Timeline View</h2>
 
-      <div className="overflow-x-auto -mx-6 px-6">
-        <div style={{ minWidth: `${Math.max(800, 48 * 4 + totalDays * 60)}px` }} className="relative" ref={containerRef}>
+      <div className="overflow-x-auto">
+        <div className="inline-block min-w-full" ref={containerRef}>
           {/* Timeline Header */}
           <div className="flex border-b border-gray-200 pb-2 mb-4">
             <div className="w-48 flex-shrink-0">
