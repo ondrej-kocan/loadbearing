@@ -9,6 +9,7 @@ export default function BottomNav() {
   const links = [
     { href: '/', label: 'Dashboard', icon: '📊' },
     { href: '/tasks', label: 'Tasks', icon: '✓' },
+    { href: '/schedule', label: 'Schedule', icon: '📅' },
     { href: '/budget', label: 'Budget', icon: '$' },
     { href: '/settings', label: 'Settings', icon: '⚙️' },
   ];
