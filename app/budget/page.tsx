@@ -8,13 +8,14 @@ export const dynamic = 'force-dynamic';
 
 export default async function Budget() {
   const project = await prisma.project.findFirst({
+    where: { status: 'active' },
     orderBy: { createdAt: 'desc' },
   });
 
   if (!project) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <p className="text-gray-500">No project found. Please create a project first.</p>
+        <p className="text-gray-500">No active project found. Please create a project first.</p>
       </div>
     );
   }

@@ -1,10 +1,11 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
-// GET /api/project - Get the single project (or null if none exists)
+// GET /api/project - Get the single active project (or null if none exists)
 export async function GET() {
   try {
     const project = await prisma.project.findFirst({
+      where: { status: 'active' },
       orderBy: { createdAt: 'desc' },
     });
 
@@ -31,11 +32,13 @@ export async function POST(request: Request) {
       );
     }
 
-    // Check if a project already exists
-    const existingProject = await prisma.project.findFirst();
+    // Check if an active project already exists
+    const existingProject = await prisma.project.findFirst({
+      where: { status: 'active' },
+    });
     if (existingProject) {
       return NextResponse.json(
-        { error: 'A project already exists. This app supports one project at a time.' },
+        { error: 'An active project already exists. This app supports one project at a time.' },
         { status: 400 }
       );
     }
