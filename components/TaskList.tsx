@@ -29,14 +29,25 @@ interface Task {
 
 interface TaskListProps {
   tasks: Task[];
+  projectId: string;
   onTaskDeleted: () => void;
   onDependencyUpdate: () => void;
 }
 
-export default function TaskList({ tasks, onTaskDeleted, onDependencyUpdate }: TaskListProps) {
+export default function TaskList({ tasks, projectId, onTaskDeleted, onDependencyUpdate }: TaskListProps) {
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [updatingStatusId, setUpdatingStatusId] = useState<string | null>(null);
+  const [completionPrompt, setCompletionPrompt] = useState<{
+    taskId: string;
+    taskName: string;
+    budgetItems: Array<{
+      id: string;
+      description: string;
+      plannedAmount: number;
+      actualAmount: number | null;
+    }>;
+  } | null>(null);
   const [expandedSections, setExpandedSections] = useState({
     in_progress: true,
     not_started: true,
@@ -80,8 +91,35 @@ export default function TaskList({ tasks, onTaskDeleted, onDependencyUpdate }: T
     };
 
     const newStatus = statusCycle[task.status];
-    setUpdatingStatusId(task.id);
 
+    // If marking as completed, check for linked budget items
+    if (newStatus === 'completed') {
+      try {
+        const budgetResponse = await fetch(`/api/budget?projectId=${projectId}`);
+        if (budgetResponse.ok) {
+          const budgetData = await budgetResponse.json();
+          const linkedItems = budgetData.budgetItems?.filter(
+            (item: any) => item.taskId === task.id && item.actualAmount === null
+          ) || [];
+
+          if (linkedItems.length > 0) {
+            // Show completion prompt instead of immediately updating
+            setCompletionPrompt({
+              taskId: task.id,
+              taskName: task.name,
+              budgetItems: linkedItems,
+            });
+            return;
+          }
+        }
+      } catch (err) {
+        console.error('Failed to check budget items:', err);
+        // Continue with status update even if budget check fails
+      }
+    }
+
+    // Update status
+    setUpdatingStatusId(task.id);
     try {
       const response = await fetch(`/api/tasks/${task.id}`, {
         method: 'PUT',
@@ -91,6 +129,60 @@ export default function TaskList({ tasks, onTaskDeleted, onDependencyUpdate }: T
           description: task.description,
           durationDays: task.durationDays,
           status: newStatus,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update status');
+      }
+
+      onTaskDeleted(); // Refresh task list
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Failed to update status');
+    } finally {
+      setUpdatingStatusId(null);
+    }
+  };
+
+  const handleCompleteWithBudgetUpdate = async (actualAmounts: Record<string, number>) => {
+    if (!completionPrompt) return;
+
+    try {
+      // Update budget items with actual amounts
+      await Promise.all(
+        Object.entries(actualAmounts).map(([budgetId, amount]) =>
+          fetch(`/api/budget/${budgetId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              actualAmount: amount,
+            }),
+          })
+        )
+      );
+
+      // Mark task as completed
+      await handleCompleteTask(completionPrompt.taskId);
+      setCompletionPrompt(null);
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Failed to update budget items');
+    }
+  };
+
+  const handleCompleteTask = async (taskId: string) => {
+    const task = tasks.find(t => t.id === taskId);
+    if (!task) return;
+
+    setUpdatingStatusId(taskId);
+    try {
+      const response = await fetch(`/api/tasks/${taskId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: task.name,
+          description: task.description,
+          durationDays: task.durationDays,
+          status: 'completed',
         }),
       });
 
@@ -332,6 +424,119 @@ export default function TaskList({ tasks, onTaskDeleted, onDependencyUpdate }: T
           )}
         </div>
       ))}
+
+      {/* Completion Prompt Modal */}
+      {completionPrompt && (
+        <CompletionPromptModal
+          taskName={completionPrompt.taskName}
+          budgetItems={completionPrompt.budgetItems}
+          onComplete={handleCompleteWithBudgetUpdate}
+          onSkip={() => {
+            handleCompleteTask(completionPrompt.taskId);
+            setCompletionPrompt(null);
+          }}
+          onCancel={() => setCompletionPrompt(null)}
+        />
+      )}
+    </div>
+  );
+}
+
+// Completion Prompt Modal Component
+function CompletionPromptModal({
+  taskName,
+  budgetItems,
+  onComplete,
+  onSkip,
+  onCancel,
+}: {
+  taskName: string;
+  budgetItems: Array<{
+    id: string;
+    description: string;
+    plannedAmount: number;
+    actualAmount: number | null;
+  }>;
+  onComplete: (amounts: Record<string, number>) => void;
+  onSkip: () => void;
+  onCancel: () => void;
+}) {
+  const [amounts, setAmounts] = useState<Record<string, string>>(() =>
+    budgetItems.reduce((acc, item) => ({
+      ...acc,
+      [item.id]: item.plannedAmount.toString(),
+    }), {})
+  );
+
+  const handleSubmit = () => {
+    const numericAmounts = Object.entries(amounts).reduce((acc, [id, value]) => ({
+      ...acc,
+      [id]: parseFloat(value) || 0,
+    }), {});
+    onComplete(numericAmounts);
+  };
+
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+    }).format(amount);
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+        <h3 className="text-lg font-semibold text-gray-900 mb-2">
+          Task Complete! 🎉
+        </h3>
+        <p className="text-sm text-gray-600 mb-4">
+          <span className="font-medium">{taskName}</span> has budget items linked. Mark costs as spent?
+        </p>
+
+        <div className="space-y-3 mb-6">
+          {budgetItems.map((item) => (
+            <div key={item.id} className="border border-gray-200 rounded-lg p-3">
+              <p className="text-sm font-medium text-gray-900 mb-2">{item.description}</p>
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-gray-500">Planned: {formatCurrency(item.plannedAmount)}</span>
+                <span className="text-xs text-gray-400">→</span>
+                <div className="flex-1">
+                  <input
+                    type="number"
+                    value={amounts[item.id]}
+                    onChange={(e) => setAmounts({ ...amounts, [item.id]: e.target.value })}
+                    placeholder="Actual amount"
+                    step="0.01"
+                    min="0"
+                    className="w-full px-2 py-1 border border-gray-300 rounded text-sm text-gray-900"
+                  />
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="flex flex-col gap-2">
+          <button
+            onClick={handleSubmit}
+            className="w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 text-sm font-medium"
+          >
+            Mark Complete & Update Costs
+          </button>
+          <button
+            onClick={onSkip}
+            className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 text-sm font-medium"
+          >
+            Mark Complete (Skip Budget Update)
+          </button>
+          <button
+            onClick={onCancel}
+            className="w-full bg-gray-200 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-300 text-sm font-medium"
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
