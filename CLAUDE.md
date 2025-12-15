@@ -2,6 +2,30 @@
 
 This file contains instructions and context for AI assistants (like Claude) working on the Loadbearing project.
 
+---
+
+## ⚠️ WORKFLOW CHECKLIST - READ THIS FIRST ⚠️
+
+**Before starting ANY task, follow this workflow:**
+
+1. ✅ **Is this a NEW task?** (new feature, bug fix, documentation update, refactor)
+   - **YES** → Create a NEW branch: `git checkout -b claude/{task-description}-{session-id} main`
+   - **NO** → Only continue on existing branch if user EXPLICITLY said "continue on branch X"
+
+2. ✅ **What counts as a "new task"?**
+   - User says "Merged. Update the documentation" → NEW TASK (create new branch)
+   - User says "Add feature X" → NEW TASK (create new branch)
+   - User says "Fix bug Y" → NEW TASK (create new branch)
+   - User says "Continue working on the auth branch" → SAME TASK (use existing branch)
+
+3. ✅ **When in doubt → ASK the user or create a NEW branch**
+
+**Examples of mistakes to avoid:**
+- ❌ User says "Merged. Update docs" → Continuing on the same branch (WRONG!)
+- ✅ User says "Merged. Update docs" → Create `claude/update-documentation-{session-id}` (CORRECT!)
+
+---
+
 ## Project Overview
 
 Loadbearing is a homeowner-focused renovation planning web app that helps manage:
