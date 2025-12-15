@@ -16,20 +16,38 @@ Target user
 Current Implementation Status
 
 Implemented Features:
-	1.	Project management (single project)
+	1.	Project management (single project with start date)
 	2.	Task CRUD with inline editing
-	3.	Task dependencies (finish-to-start, cycle detection)
-	4.	Auto-scheduled timeline (forward scheduling algorithm)
-	5.	Budget tracking by area with inline editing
-	6.	Budget summaries (planned vs actual)
+	3.	Task status tracking (not started, in progress, completed)
+	   - Quick status toggle (click pills to cycle)
+	   - Grouped by status with collapsible sections
+	4.	Task dependencies (finish-to-start, cycle detection)
+	   - Visual blocking indicators (lock icon)
+	   - Downstream impact badges ("Blocks X tasks")
+	5.	Auto-scheduled timeline (forward scheduling algorithm)
+	   - Timeline shift tracking
+	   - Visual shift indicators ("+X days due to changes")
+	   - Edit warnings showing impact on dependent tasks
+	6.	Dashboard improvements
+	   - Task status breakdown with progress bar
+	   - "Ready to Start" section
+	   - Timeline causality (original vs current dates)
+	   - Timeline changes section
+	7.	Budget tracking by area with inline editing
+	8.	Budget summaries (planned vs actual)
+	9.	Task ↔ Budget linkage
+	   - Optional linking of budget items to tasks
+	   - Visual linkage display
+	   - Task completion prompt for updating actual costs
+	10.	Responsive navigation (mobile bottom nav, desktop sidebar)
 
 Next Priority Features:
-	1.	Task status tracking (not started, in progress, completed)
+	1.	Status-driven prompts (calm, inline nudges)
 	2.	Gantt chart visualization
 	3.	Date picker for project start date
 	4.	Task filtering and sorting
 	5.	Export functionality (CSV/PDF)
-	6.	Read-only share links (lower priority)
+	6.	Read-only share links
 
 Design principles
 	•	Single project mindset
