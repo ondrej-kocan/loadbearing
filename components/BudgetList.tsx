@@ -106,6 +106,23 @@ export default function BudgetList({ budgetItems, onBudgetDeleted }: BudgetListP
             </div>
           </div>
 
+          {/* Over-Budget Prompt */}
+          {actual > planned && actual - planned > 0 && (
+            <div className="mb-3 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+              <div className="flex items-start gap-2">
+                <span className="text-amber-600 text-lg flex-shrink-0">💡</span>
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-amber-900">
+                    {area} is {formatCurrency(actual - planned)} over budget
+                  </p>
+                  <p className="text-xs text-amber-700 mt-1">
+                    Consider adjusting your budget or reducing expenses in this area
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Budget Items */}
           <div className="space-y-2">
             {items.map((item) => (
