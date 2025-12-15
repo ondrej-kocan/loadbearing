@@ -2,11 +2,11 @@ import { prisma } from '@/lib/prisma';
 import BottomNav from '@/components/BottomNav';
 import Sidebar from '@/components/Sidebar';
 import PageHeader from '@/components/PageHeader';
-import TasksPage from '@/components/TasksPage';
+import ProjectSettingsPage from '@/components/ProjectSettingsPage';
 
 export const dynamic = 'force-dynamic';
 
-export default async function Tasks() {
+export default async function Settings() {
   const project = await prisma.project.findFirst({
     where: { status: 'active' },
     orderBy: { createdAt: 'desc' },
@@ -37,7 +37,7 @@ export default async function Tasks() {
         <PageHeader title={project.name} />
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <TasksPage project={serializedProject} />
+          <ProjectSettingsPage project={serializedProject} />
         </div>
       </div>
 

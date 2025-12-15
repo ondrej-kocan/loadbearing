@@ -8,12 +8,13 @@ import ProjectOverview from '@/components/ProjectOverview';
 export const dynamic = 'force-dynamic';
 
 export default async function Home() {
-  // Fetch the single project (if it exists)
+  // Fetch the single active project (if it exists)
   const project = await prisma.project.findFirst({
+    where: { status: 'active' },
     orderBy: { createdAt: 'desc' },
   });
 
-  // If no project exists, show the creation form
+  // If no active project exists, show the creation form
   if (!project) {
     return <CreateProject />;
   }

@@ -10,6 +10,7 @@ export default function BottomNav() {
     { href: '/', label: 'Dashboard', icon: '📊' },
     { href: '/tasks', label: 'Tasks', icon: '✓' },
     { href: '/budget', label: 'Budget', icon: '$' },
+    { href: '/settings', label: 'Settings', icon: '⚙️' },
   ];
 
   return (
