@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, useRef, useEffect, useState } from 'react';
 
 interface Dependency {
   id: string;
@@ -29,6 +29,13 @@ interface GanttChartProps {
 
 export default function GanttChart({ tasks, projectStartDate }: GanttChartProps) {
   const tasksWithDates = tasks.filter(t => t.startDate && t.endDate);
+  const taskRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Calculate date range for the chart
   const { minDate, maxDate, totalDays } = useMemo(() => {
@@ -118,6 +125,47 @@ export default function GanttChart({ tasks, projectStartDate }: GanttChartProps)
     });
   };
 
+  // Calculate dependency lines
+  const getDependencyLines = () => {
+    if (!mounted || !containerRef.current) return [];
+
+    const lines: Array<{ path: string; id: string }> = [];
+    const containerRect = containerRef.current.getBoundingClientRect();
+
+    tasksWithDates.forEach((task) => {
+      if (!task.dependencies || task.dependencies.length === 0) return;
+
+      task.dependencies.forEach((dep) => {
+        const fromTaskRef = taskRefs.current[dep.dependsOnTaskId];
+        const toTaskRef = taskRefs.current[task.id];
+
+        if (!fromTaskRef || !toTaskRef) return;
+
+        const fromRect = fromTaskRef.getBoundingClientRect();
+        const toRect = toTaskRef.getBoundingClientRect();
+
+        // Calculate relative positions
+        const x1 = fromRect.right - containerRect.left;
+        const y1 = fromRect.top - containerRect.top + fromRect.height / 2;
+        const x2 = toRect.left - containerRect.left;
+        const y2 = toRect.top - containerRect.top + toRect.height / 2;
+
+        // Create a curved path (bezier curve)
+        const midX = (x1 + x2) / 2;
+        const path = `M ${x1} ${y1} C ${midX} ${y1}, ${midX} ${y2}, ${x2} ${y2}`;
+
+        lines.push({
+          path,
+          id: `${dep.dependsOnTaskId}-${task.id}`,
+        });
+      });
+    });
+
+    return lines;
+  };
+
+  const dependencyLines = getDependencyLines();
+
   if (tasksWithDates.length === 0) {
     return (
       <div className="bg-gray-50 border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
@@ -133,7 +181,7 @@ export default function GanttChart({ tasks, projectStartDate }: GanttChartProps)
       <h2 className="text-xl font-semibold text-gray-900 mb-6">Timeline View</h2>
 
       <div className="overflow-x-auto">
-        <div className="min-w-[800px]">
+        <div className="min-w-[800px] relative" ref={containerRef}>
           {/* Timeline Header */}
           <div className="flex border-b border-gray-200 pb-2 mb-4">
             <div className="w-48 flex-shrink-0">
@@ -155,7 +203,7 @@ export default function GanttChart({ tasks, projectStartDate }: GanttChartProps)
           </div>
 
           {/* Task Rows */}
-          <div className="space-y-3">
+          <div className="space-y-3 relative">
             {tasksWithDates.map((task) => {
               const barStyle = getTaskBarStyle(task);
               if (!barStyle) return null;
@@ -187,6 +235,7 @@ export default function GanttChart({ tasks, projectStartDate }: GanttChartProps)
 
                     {/* Task bar */}
                     <div
+                      ref={(el) => { taskRefs.current[task.id] = el; }}
                       className="absolute top-1 h-8 flex items-center"
                       style={barStyle}
                     >
@@ -203,6 +252,35 @@ export default function GanttChart({ tasks, projectStartDate }: GanttChartProps)
                 </div>
               );
             })}
+
+            {/* Dependency Lines SVG Overlay */}
+            {mounted && dependencyLines.length > 0 && (
+              <svg
+                className="absolute top-0 left-0 w-full h-full pointer-events-none"
+                style={{ zIndex: 1 }}
+              >
+                {dependencyLines.map((line) => (
+                  <g key={line.id}>
+                    <path
+                      d={line.path}
+                      stroke="#3b82f6"
+                      strokeWidth="2"
+                      fill="none"
+                      strokeDasharray="4 2"
+                      opacity="0.6"
+                    />
+                    {/* Arrow head */}
+                    <circle
+                      cx={line.path.split(' ').slice(-2, -1)[0]}
+                      cy={line.path.split(' ').slice(-1)[0]}
+                      r="3"
+                      fill="#3b82f6"
+                      opacity="0.6"
+                    />
+                  </g>
+                ))}
+              </svg>
+            )}
           </div>
 
           {/* Legend */}
