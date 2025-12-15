@@ -76,10 +76,13 @@ Open [http://localhost:3000](http://localhost:3000) to see the app.
 
 ### Core Models
 
-- **Project**: Single renovation project container
-- **Task**: Individual tasks with duration and dependencies
+- **Project**: Single renovation project container with start date
+- **Task**: Individual tasks with duration, dependencies, and status tracking
+  - Includes timeline shift tracking (originalStartDate, originalEndDate, shiftDays, shiftCause)
+  - Status: not_started, in_progress, completed
 - **TaskDependency**: Finish-to-start dependencies between tasks
 - **BudgetItem**: Budget tracking by area (planned vs actual)
+  - Optional link to tasks via taskId (enables completion prompts)
 - **ShareToken**: Read-only share links (model exists, UI not yet implemented)
 
 ## Domain Logic
@@ -165,31 +168,70 @@ Make sure these are set in Vercel:
 ## Current Features
 
 ### Implemented
-1. **Project Management** - Single renovation project container
-2. **Task Management**
+
+#### Core Project Management
+1. **Project Management** - Single renovation project container with start date
+
+#### Task Management
+2. **Task CRUD Operations**
    - Create, edit, and delete tasks
    - Custom duration (in days)
    - Task descriptions
    - Inline editing interface
-3. **Task Dependencies**
+
+3. **Task Status Tracking**
+   - Three states: not started, in progress, completed
+   - Quick status toggle - click status pills to cycle through states
+   - Grouped by status with collapsible sections
+   - Visual indicators for task progress
+
+4. **Task Dependencies**
    - Finish-to-start dependency model
    - Cycle detection (prevents circular dependencies)
    - Auto-scheduling with forward scheduling algorithm
-   - Visual indication of blocking tasks
-4. **Budget Tracking**
+   - Visual indication of blocking tasks (lock icon)
+   - "Blocks X tasks" badges showing downstream impact
+
+#### Timeline & Scheduling
+5. **Dependency-Driven Timeline Behavior**
+   - Auto-scheduled dates for all tasks based on dependencies
+   - Timeline shift tracking (shows when tasks move from original schedule)
+   - Visual shift indicators: "+X days due to changes"
+   - Edit warnings showing impact on dependent tasks
+   - Real-time impact calculation with debounced API calls
+
+6. **Dashboard Timeline Causality**
+   - Shows original vs current completion dates
+   - Visual indicators: yellow for delays, green for ahead of schedule
+   - "Timeline Changes" section listing shifted tasks
+   - Task status breakdown with progress bar
+   - "Ready to Start" section (tasks with no blockers)
+
+#### Budget Management
+7. **Budget Tracking**
    - Create, edit, and delete budget items
    - Organized by area (Kitchen, Bathroom, etc.)
    - Planned vs. actual amount tracking
    - Budget summaries and totals
    - Inline editing interface
-5. **Timeline Calculation**
-   - Auto-scheduled dates for all tasks
-   - Project completion date based on latest task end date
+
+8. **Task ↔ Budget Linkage**
+   - Optional linking of budget items to tasks
+   - Visual task linkage in budget list
+   - Task completion prompt for updating actual costs
+   - Auto-fills actual costs with planned amounts
+   - Smart budget updates when completing tasks
+
+#### Navigation & UX
+9. **Responsive Navigation**
+   - Mobile: Bottom navigation (icon-only)
+   - Desktop: Fixed sidebar with project name
+   - Responsive breakpoints at 640px
 
 ### Planned Features
-- **Task Status Tracking** - Track progress (not started, in progress, completed)
 - **Gantt Chart Visualization** - Visual timeline of tasks and dependencies
+- **Status-Driven Prompts** - Inline nudges (e.g., "Task blocked for 5 days")
 - **Date Picker** - Calendar UI for project start date
-- **Filtering & Sorting** - Filter tasks by status, sort by date
+- **Filtering & Sorting** - Advanced task filtering
 - **Export Functionality** - Export to CSV/PDF
 - **Read-only Share Links** - Share project view with contractors/family
