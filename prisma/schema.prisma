@@ -50,6 +50,7 @@ model Task {
   project           Project          @relation(fields: [projectId], references: [id], onDelete: Cascade)
   dependencies      TaskDependency[] @relation("TaskDependencies")
   dependentTasks    TaskDependency[] @relation("DependentTasks")
+  budgetItems       BudgetItem[]     // Budget items linked to this task
 
   @@map("tasks")
 }
@@ -70,6 +71,7 @@ model TaskDependency {
 model BudgetItem {
   id            String   @id @default(cuid())
   projectId     String
+  taskId        String?  // Optional link to a task
   area          String
   description   String
   plannedAmount Decimal  @db.Decimal(10, 2)
@@ -78,6 +80,7 @@ model BudgetItem {
   updatedAt     DateTime @updatedAt
 
   project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  task    Task?   @relation(fields: [taskId], references: [id], onDelete: SetNull)
 
   @@map("budget_items")
 }

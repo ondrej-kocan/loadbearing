@@ -29,11 +29,17 @@ interface Task {
 
 interface BudgetItem {
   id: string;
+  projectId: string;
+  taskId: string | null;
   area: string;
   description: string;
   plannedAmount: number;
   actualAmount: number | null;
   createdAt: string;
+  task?: {
+    id: string;
+    name: string;
+  } | null;
 }
 
 interface ProjectDashboardProps {
@@ -223,6 +229,7 @@ export default function ProjectDashboard({ project }: ProjectDashboardProps) {
           ) : (
             <TaskList
               tasks={tasks}
+              projectId={project.id}
               onTaskDeleted={fetchTasks}
               onDependencyUpdate={fetchTasks}
             />

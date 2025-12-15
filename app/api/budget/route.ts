@@ -16,6 +16,14 @@ export async function GET(request: Request) {
 
     const budgetItems = await prisma.budgetItem.findMany({
       where: { projectId },
+      include: {
+        task: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
       orderBy: { createdAt: 'asc' },
     });
 
@@ -33,7 +41,7 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { projectId, area, description, plannedAmount, actualAmount } = body;
+    const { projectId, area, description, plannedAmount, actualAmount, taskId } = body;
 
     if (!projectId || !area || !description || plannedAmount === undefined) {
       return NextResponse.json(
@@ -49,6 +57,7 @@ export async function POST(request: Request) {
         description: description.trim(),
         plannedAmount,
         actualAmount: actualAmount || null,
+        taskId: taskId || null,
       },
     });
 

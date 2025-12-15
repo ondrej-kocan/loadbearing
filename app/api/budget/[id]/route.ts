@@ -9,7 +9,7 @@ export async function PUT(
   try {
     const { id } = await params;
     const body = await request.json();
-    const { area, description, plannedAmount, actualAmount } = body;
+    const { area, description, plannedAmount, actualAmount, taskId } = body;
 
     const budgetItem = await prisma.budgetItem.update({
       where: { id },
@@ -18,6 +18,7 @@ export async function PUT(
         description: description?.trim(),
         plannedAmount,
         actualAmount: actualAmount === '' ? null : actualAmount,
+        taskId: taskId || null,
         updatedAt: new Date(),
       },
     });

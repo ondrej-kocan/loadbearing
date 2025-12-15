@@ -90,6 +90,7 @@ export default function TasksPage({ project }: TasksPageProps) {
       ) : tasks.length > 0 ? (
         <TaskList
           tasks={tasks}
+          projectId={project.id}
           onTaskDeleted={fetchTasks}
           onDependencyUpdate={fetchTasks}
         />
