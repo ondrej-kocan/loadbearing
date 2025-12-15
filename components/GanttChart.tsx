@@ -96,12 +96,13 @@ export default function GanttChart({ tasks, projectStartDate }: GanttChartProps)
     // Use the task's durationDays directly for accurate width
     const duration = task.durationDays;
 
-    const leftPercent = (startOffset / totalDays) * 100;
-    const widthPercent = (duration / totalDays) * 100;
+    // Use pixel-based positioning (60px per day)
+    const leftPx = startOffset * 60;
+    const widthPx = duration * 60;
 
     return {
-      left: `${leftPercent}%`,
-      width: `${widthPercent}%`,
+      left: `${leftPx}px`,
+      width: `${widthPx}px`,
     };
   };
 
@@ -185,8 +186,8 @@ export default function GanttChart({ tasks, projectStartDate }: GanttChartProps)
     <div className="bg-white rounded-lg shadow p-6">
       <h2 className="text-xl font-semibold text-gray-900 mb-6">Timeline View</h2>
 
-      <div className="overflow-x-auto">
-        <div className="min-w-[800px] relative" ref={containerRef}>
+      <div className="overflow-x-auto -mx-6 px-6">
+        <div style={{ minWidth: `${Math.max(800, 48 * 4 + totalDays * 60)}px` }} className="relative" ref={containerRef}>
           {/* Timeline Header */}
           <div className="flex border-b border-gray-200 pb-2 mb-4">
             <div className="w-48 flex-shrink-0">
@@ -197,8 +198,8 @@ export default function GanttChart({ tasks, projectStartDate }: GanttChartProps)
                 {timelineLabels.map((date, index) => (
                   <div
                     key={index}
-                    className="flex-1 text-center"
-                    style={{ minWidth: `${100 / totalDays}%` }}
+                    className="text-center flex-shrink-0"
+                    style={{ width: '60px' }}
                   >
                     <span className="text-xs text-gray-600">{formatDate(date)}</span>
                   </div>
@@ -232,8 +233,8 @@ export default function GanttChart({ tasks, projectStartDate }: GanttChartProps)
                       {timelineLabels.map((_, index) => (
                         <div
                           key={index}
-                          className="flex-1 border-r border-gray-100"
-                          style={{ minWidth: `${100 / totalDays}%` }}
+                          className="border-r border-gray-100 flex-shrink-0"
+                          style={{ width: '60px' }}
                         />
                       ))}
                     </div>
