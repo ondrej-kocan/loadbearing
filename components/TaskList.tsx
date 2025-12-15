@@ -343,6 +343,40 @@ export default function TaskList({ tasks, projectId, onTaskDeleted, onDependency
             )}
           </div>
 
+          {/* Blocked Task Prompt */}
+          {task.status !== 'completed' && getActiveDependencies(task).length > 0 && (
+            <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+              <div className="flex items-start gap-2">
+                <span className="text-blue-600 text-lg flex-shrink-0">💡</span>
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-blue-900">
+                    This task is waiting on {getActiveDependencies(task).length} {getActiveDependencies(task).length === 1 ? 'task' : 'tasks'}
+                  </p>
+                  <p className="text-xs text-blue-700 mt-1">
+                    {getActiveDependencies(task).map(dep => dep.dependsOnTask.name).join(', ')}
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* In Progress Too Long Prompt */}
+          {task.status === 'in_progress' && task.endDate && new Date() > new Date(task.endDate) && (
+            <div className="mt-3 p-3 bg-purple-50 border border-purple-200 rounded-lg">
+              <div className="flex items-start gap-2">
+                <span className="text-purple-600 text-lg flex-shrink-0">⏰</span>
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-purple-900">
+                    This task was expected to finish by {formatDate(task.endDate)}
+                  </p>
+                  <p className="text-xs text-purple-700 mt-1">
+                    Consider updating the duration or checking if there are any blockers
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Dependency Manager */}
           <DependencyManager
             taskId={task.id}
