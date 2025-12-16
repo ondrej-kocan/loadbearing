@@ -213,7 +213,7 @@ export default function GanttChart({ tasks, projectStartDate }: GanttChartProps)
           </div>
 
           {/* Task Rows */}
-          <div className="space-y-3 relative">
+          <div className="space-y-3 relative isolate">
             {tasksWithDates.map((task) => {
               const barStyle = getTaskBarStyle(task);
               if (!barStyle) return null;
@@ -264,8 +264,7 @@ export default function GanttChart({ tasks, projectStartDate }: GanttChartProps)
             {/* Dependency Lines SVG Overlay */}
             {mounted && dependencyLines.length > 0 && (
               <svg
-                className="absolute top-0 left-0 w-full h-full pointer-events-none"
-                style={{ zIndex: 0 }}
+                className="absolute top-0 left-0 w-full h-full pointer-events-none -z-10"
               >
                 <defs>
                   <marker
