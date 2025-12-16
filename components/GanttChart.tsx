@@ -264,7 +264,7 @@ export default function GanttChart({ tasks, projectStartDate }: GanttChartProps)
             {/* Dependency Lines SVG Overlay */}
             {mounted && dependencyLines.length > 0 && (
               <svg
-                className="absolute top-0 left-0 w-full h-full pointer-events-none z-0"
+                className="absolute top-0 left-0 w-full h-full pointer-events-none z-[15]"
               >
                 <defs>
                   <marker
