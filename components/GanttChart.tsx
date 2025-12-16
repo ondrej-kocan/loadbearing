@@ -213,15 +213,15 @@ export default function GanttChart({ tasks, projectStartDate }: GanttChartProps)
           </div>
 
           {/* Task Rows */}
-          <div className="space-y-3 relative isolate">
+          <div className="space-y-3 relative">
             {tasksWithDates.map((task) => {
               const barStyle = getTaskBarStyle(task);
               if (!barStyle) return null;
 
               return (
-                <div key={task.id} className="flex items-center">
+                <div key={task.id} className="flex items-center relative">
                   {/* Task Name */}
-                  <div className="w-32 sm:w-48 h-10 flex-shrink-0 pr-3 sm:pr-4 sticky left-0 bg-white z-10 border-r border-gray-200 shadow-[2px_0_4px_-2px_rgba(0,0,0,0.1)] flex items-center">
+                  <div className="w-32 sm:w-48 h-10 flex-shrink-0 pr-3 sm:pr-4 sticky left-0 bg-white z-20 border-r border-gray-200 shadow-[2px_0_4px_-2px_rgba(0,0,0,0.1)] flex items-center relative">
                     <div className="flex-1 min-w-0">
                       <p className="text-xs sm:text-sm font-medium text-gray-900 truncate" title={task.name}>
                         {task.name}
@@ -233,7 +233,7 @@ export default function GanttChart({ tasks, projectStartDate }: GanttChartProps)
                   </div>
 
                   {/* Task Bar */}
-                  <div className="relative h-10 z-0" style={{ width: `${totalDays * dayWidth}px` }}>
+                  <div className="relative h-10 z-10" style={{ width: `${totalDays * dayWidth}px` }}>
                     {/* Background grid */}
                     <div className="absolute inset-0 flex">
                       {timelineLabels.map((_, index) => (
@@ -264,7 +264,7 @@ export default function GanttChart({ tasks, projectStartDate }: GanttChartProps)
             {/* Dependency Lines SVG Overlay */}
             {mounted && dependencyLines.length > 0 && (
               <svg
-                className="absolute top-0 left-0 w-full h-full pointer-events-none -z-10"
+                className="absolute top-0 left-0 w-full h-full pointer-events-none z-0"
               >
                 <defs>
                   <marker
