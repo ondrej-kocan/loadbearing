@@ -265,7 +265,7 @@ export default function GanttChart({ tasks, projectStartDate }: GanttChartProps)
             {mounted && dependencyLines.length > 0 && (
               <svg
                 className="absolute top-0 left-0 w-full h-full pointer-events-none"
-                style={{ zIndex: 1 }}
+                style={{ zIndex: 0 }}
               >
                 <defs>
                   <marker
