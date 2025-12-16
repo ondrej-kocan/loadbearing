@@ -186,7 +186,7 @@ export default function GanttChart({ tasks, projectStartDate }: GanttChartProps)
   }
 
   return (
-    <div className="bg-white rounded-lg shadow overflow-hidden">
+    <div className="bg-white rounded-lg shadow overflow-hidden min-w-0">
       <div className="p-4 sm:p-6 pb-0">
         <h2 className="text-xl font-semibold text-gray-900 mb-4 sm:mb-6">Timeline View</h2>
       </div>

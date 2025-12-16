@@ -33,10 +33,10 @@ export default async function Schedule() {
       <Sidebar projectName={project.name} />
 
       {/* Main Content Area */}
-      <div className="flex-1 pb-14 sm:pb-0 sm:ml-64">
+      <div className="flex-1 pb-14 sm:pb-0 sm:ml-64 min-w-0">
         <PageHeader title={project.name} />
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 min-w-0">
           <SchedulePage project={serializedProject} />
         </div>
       </div>
