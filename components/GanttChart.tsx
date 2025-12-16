@@ -231,7 +231,7 @@ export default function GanttChart({ tasks, projectStartDate }: GanttChartProps)
                   </div>
 
                   {/* Task Bar */}
-                  <div className="relative h-10" style={{ width: `${totalDays * dayWidth}px` }}>
+                  <div className="relative h-10 z-0" style={{ width: `${totalDays * dayWidth}px` }}>
                     {/* Background grid */}
                     <div className="absolute inset-0 flex">
                       {timelineLabels.map((_, index) => (
