@@ -186,13 +186,14 @@ export default function GanttChart({ tasks, projectStartDate }: GanttChartProps)
   }
 
   return (
-    <div className="bg-white rounded-lg shadow overflow-hidden min-w-0">
+    <div className="bg-white rounded-lg shadow overflow-hidden w-full min-w-0">
       <div className="p-4 sm:p-6 pb-0">
         <h2 className="text-xl font-semibold text-gray-900 mb-4 sm:mb-6">Timeline View</h2>
       </div>
 
       <div className="overflow-x-auto pb-4">
-        <div className="inline-block px-4 sm:px-6" ref={containerRef}>
+        <div className="px-4 sm:px-6">
+          <div className="inline-block" ref={containerRef}>
           {/* Timeline Header */}
           <div className="flex border-b border-gray-200 pb-2 mb-4">
             <div className="w-32 sm:w-48 flex-shrink-0">
@@ -293,7 +294,7 @@ export default function GanttChart({ tasks, projectStartDate }: GanttChartProps)
               </svg>
             )}
           </div>
-
+          </div>
         </div>
       </div>
 
