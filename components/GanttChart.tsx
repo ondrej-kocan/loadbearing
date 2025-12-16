@@ -196,7 +196,7 @@ export default function GanttChart({ tasks, projectStartDate }: GanttChartProps)
           <div className="inline-block" ref={containerRef}>
           {/* Timeline Header */}
           <div className="flex border-b border-gray-200 pb-2 mb-4">
-            <div className="w-32 sm:w-48 flex-shrink-0 pr-3 sm:pr-4 sticky left-0 bg-white z-10 border-r border-gray-200 shadow-[2px_0_4px_-2px_rgba(0,0,0,0.1)]">
+            <div className="w-32 sm:w-48 flex-shrink-0 pr-3 sm:pr-4 sticky left-0 bg-white z-20 border-r border-gray-200 shadow-[2px_0_4px_-2px_rgba(0,0,0,0.1)] relative">
               <span className="text-sm font-medium text-gray-700">Task</span>
             </div>
             <div className="flex">
