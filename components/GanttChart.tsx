@@ -221,13 +221,15 @@ export default function GanttChart({ tasks, projectStartDate }: GanttChartProps)
               return (
                 <div key={task.id} className="flex items-center">
                   {/* Task Name */}
-                  <div className="w-32 sm:w-48 flex-shrink-0 pr-3 sm:pr-4 sticky left-0 bg-white z-10 border-r border-gray-200 shadow-[2px_0_4px_-2px_rgba(0,0,0,0.1)]">
-                    <p className="text-xs sm:text-sm font-medium text-gray-900 truncate" title={task.name}>
-                      {task.name}
-                    </p>
-                    <p className="text-xs text-gray-500 hidden sm:block">
-                      {task.durationDays} {task.durationDays === 1 ? 'day' : 'days'}
-                    </p>
+                  <div className="w-32 sm:w-48 h-10 flex-shrink-0 pr-3 sm:pr-4 sticky left-0 bg-white z-10 border-r border-gray-200 shadow-[2px_0_4px_-2px_rgba(0,0,0,0.1)] flex items-center">
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs sm:text-sm font-medium text-gray-900 truncate" title={task.name}>
+                        {task.name}
+                      </p>
+                      <p className="text-xs text-gray-500 hidden sm:block truncate">
+                        {task.durationDays} {task.durationDays === 1 ? 'day' : 'days'}
+                      </p>
+                    </div>
                   </div>
 
                   {/* Task Bar */}
