@@ -213,14 +213,7 @@ export default function GanttChart({ tasks, projectStartDate }: GanttChartProps)
           </div>
 
           {/* Task Rows */}
-          <div className="relative">
-            {/* Continuous sticky column background - covers all rows and gaps */}
-            <div
-              className="absolute left-0 w-32 sm:w-48 bg-white sticky left-0 z-20 border-r border-gray-200 shadow-[2px_0_4px_-2px_rgba(0,0,0,0.1)]"
-              style={{ top: 0, bottom: 0, height: '100%' }}
-            />
-
-            <div className="space-y-3">
+          <div className="space-y-3 relative">
             {tasksWithDates.map((task) => {
               const barStyle = getTaskBarStyle(task);
               if (!barStyle) return null;
@@ -228,7 +221,7 @@ export default function GanttChart({ tasks, projectStartDate }: GanttChartProps)
               return (
                 <div key={task.id} className="flex items-center">
                   {/* Task Name */}
-                  <div className="w-32 sm:w-48 h-10 flex-shrink-0 pr-3 sm:pr-4 sticky left-0 z-30 flex items-center">
+                  <div className="w-32 sm:w-48 flex-shrink-0 pr-3 sm:pr-4 sticky left-0 bg-white z-20 border-r border-gray-200 shadow-[2px_0_4px_-2px_rgba(0,0,0,0.1)] flex items-center pb-3 -mb-3 pt-0 min-h-[52px]">
                     <div className="flex-1 min-w-0">
                       <p className="text-xs sm:text-sm font-medium text-gray-900 truncate" title={task.name}>
                         {task.name}
@@ -240,7 +233,7 @@ export default function GanttChart({ tasks, projectStartDate }: GanttChartProps)
                   </div>
 
                   {/* Task Bar */}
-                  <div className="relative h-10 z-0" style={{ width: `${totalDays * dayWidth}px` }}>
+                  <div className="relative h-10 z-10" style={{ width: `${totalDays * dayWidth}px` }}>
                     {/* Background grid */}
                     <div className="absolute inset-0 flex">
                       {timelineLabels.map((_, index) => (
@@ -301,7 +294,6 @@ export default function GanttChart({ tasks, projectStartDate }: GanttChartProps)
                 ))}
               </svg>
             )}
-            </div>
           </div>
           </div>
         </div>
