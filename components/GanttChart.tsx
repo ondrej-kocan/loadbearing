@@ -191,8 +191,8 @@ export default function GanttChart({ tasks, projectStartDate }: GanttChartProps)
         <h2 className="text-xl font-semibold text-gray-900 mb-4 sm:mb-6">Timeline View</h2>
       </div>
 
-      <div className="overflow-x-auto pb-4">
-        <div className="px-4 sm:px-6">
+      <div className="px-4 sm:px-6 min-w-0">
+        <div className="overflow-x-auto pb-4">
           <div className="inline-block" ref={containerRef}>
           {/* Timeline Header */}
           <div className="flex border-b border-gray-200 pb-2 mb-4">
